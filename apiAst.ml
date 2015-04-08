@@ -1,6 +1,7 @@
 type 'id uname = 'id [@@deriving show]
 type 'id lname = 'id [@@deriving show]
 type macro = Macro of string [@@deriving show]
+type verbatim = string [@@deriving show]
 
 
 type 'id var =
@@ -89,6 +90,11 @@ type 'id decl =
 
 
 type 'id decls = 'id decl list
+  [@@deriving show]
+
+
+type 'id api =
+  | Api of verbatim option * 'id decls * verbatim option
   [@@deriving show]
 
 

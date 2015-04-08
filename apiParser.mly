@@ -4,6 +4,7 @@ open ApiAst
 
 %token EOF
 
+%token<string> VERBATIM
 %token<string> MACRO
 
 %token COMMENT_START COMMENT_START_BIG COMMENT_BREAK COMMENT_END
@@ -36,13 +37,13 @@ open ApiAst
 %left PLUS
 
 %start				parse_api
-%type<string ApiAst.decl list>	parse_api
+%type<string ApiAst.api>	parse_api
 
 %%
 
 parse_api
-	: declarations EOF
-		{ $1 }
+	: VERBATIM? declarations VERBATIM? EOF
+		{ Api ($1, $2, $3) }
 
 
 declarations
@@ -190,9 +191,7 @@ parameter
 
 
 class_decl
-	: CLASS lname EQ declarations EOF
-		{ Decl_Class ($2, $4) }
-	| CLASS lname LBRACE declarations RBRACE
+	: CLASS lname LBRACE declarations RBRACE
 		{ Decl_Class ($2, $4) }
 
 

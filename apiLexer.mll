@@ -37,6 +37,8 @@ and normal state =
 | ' '					{ normal state lexbuf }
 | "//" [^'\n']*				{ normal state lexbuf }
 
+| "%{\n"				{ verbatim state [] lexbuf }
+
 | "#define " uname ([^'\n']|"\\\n")+	{ MACRO (Lexing.lexeme lexbuf) }
 
 | "/**"					{ state.state <- LexComment; COMMENT_START }
@@ -78,6 +80,13 @@ and normal state =
 | _ as c				{ raise (Lexing_error (lexeme_start_p lexbuf, Char.escaped c)) }
 
 
+and verbatim state text =
+  parse
+| ['\n' '%']
+| [^'\n' '%']+ as s			{ verbatim state (s :: text) lexbuf }
+| "\n%}"				{ VERBATIM (String.concat "" (List.rev text)) }
+
+
 and comment state =
   parse
 | "$" (lname as s)			{ LNAME s }
@@ -110,6 +119,7 @@ and variable state =
     function
     | EOF -> "EOF"
 
+    | VERBATIM s -> "VERBATIM " ^ (String.escaped s)
     | MACRO s -> "MACRO " ^ (String.escaped s)
 
     | COMMENT_START -> "COMMENT_START"
