@@ -10,9 +10,9 @@ let parse file =
   api
 
 
-let (|!) x msg =
-  print_endline msg;
-  x
+let pass msg f x =
+  (*print_endline msg;*)
+  f x
 
 
 let main input =
@@ -20,43 +20,43 @@ let main input =
 
   let api =
     api
-    |> ErrorNULL.transform
-    |> ErrorOK.transform
-    |> GetSetParams.transform
-    |> LengthParams.transform
-    |> ThisParams.transform
-    |> ErrorSplitFromFunction.transform
-    |> (fun api -> ExtractSymbols.extract api, api)
-    |> ScopeBinding.transform
-    |> EventRename.transform
-    |> EventApply.transform
-    |> ErrorEnumsRename.transform
-    |> GetSetRename.transform
-    |> GetSetFlatten.transform
-    |> StaticApply.transform
-    |> StructTypes.transform
-    |> ClassToNamespace.transform
-    |> NamespaceApplyEvents.transform
-    |> NamespaceApply.transform 1
-    |> NamespaceFlatten.transform 1
-    |> ErrorEnumsAddERR.transform
-    |> ErrorEnums.transform
-    |> ErrorParams.transform
-    |> EventFunction.transform
-    |> EventCloneFunctionName.transform
-    |> EventParams.transform
-    |> EventComments.transform
-    |> EventFlatten.transform
-    |> NamespaceApply.transform 0
-    |> NamespaceFlatten.transform 0
-    |> EnumNamespaceApply.transform
-    |> EnumNamespaceFlatten.transform
-    |> EnumApply.transform
-    |> ArrayToPointer.transform
-    |> StaticElide.transform
-    |> Constants.transform
-    |> ScopeBinding.Inverse.transform
-    |> StringToCharP.transform
+    |> pass "ErrorNULL" ErrorNULL.transform
+    |> pass "ErrorOK" ErrorOK.transform
+    |> pass "GetSetParams" GetSetParams.transform
+    |> pass "LengthParams" LengthParams.transform
+    |> pass "ThisParams" ThisParams.transform
+    |> pass "ErrorSplitFromFunction" ErrorSplitFromFunction.transform
+    |> pass "ExtractSymbols" (fun api -> ExtractSymbols.extract api, api)
+    |> pass "ScopeBinding" ScopeBinding.transform
+    |> pass "EventRename" EventRename.transform
+    |> pass "EventApply" EventApply.transform
+    |> pass "ErrorEnumsRename" ErrorEnumsRename.transform
+    |> pass "GetSetRename" GetSetRename.transform
+    |> pass "GetSetFlatten" GetSetFlatten.transform
+    |> pass "StaticApply" StaticApply.transform
+    |> pass "StructTypes" StructTypes.transform
+    |> pass "ClassToNamespace" ClassToNamespace.transform
+    |> pass "NamespaceApplyEvents" NamespaceApplyEvents.transform
+    |> pass "NamespaceApply" (NamespaceApply.transform 1)
+    |> pass "NamespaceFlatten" (NamespaceFlatten.transform 1)
+    |> pass "ErrorEnumsAddERR" ErrorEnumsAddERR.transform
+    |> pass "ErrorEnums" ErrorEnums.transform
+    |> pass "ErrorParams" ErrorParams.transform
+    |> pass "EventFunction" EventFunction.transform
+    |> pass "EventCloneFunctionName" EventCloneFunctionName.transform
+    |> pass "EventParams" EventParams.transform
+    |> pass "EventComments" EventComments.transform
+    |> pass "EventFlatten" EventFlatten.transform
+    |> pass "NamespaceApply" (NamespaceApply.transform 0)
+    |> pass "NamespaceFlatten" (NamespaceFlatten.transform 0)
+    |> pass "EnumNamespaceApply" EnumNamespaceApply.transform
+    |> pass "EnumNamespaceFlatten" EnumNamespaceFlatten.transform
+    |> pass "EnumApply" EnumApply.transform
+    |> pass "ArrayToPointer" ArrayToPointer.transform
+    |> pass "StaticElide" StaticElide.transform
+    |> pass "Constants" Constants.transform
+    |> pass "ScopeBinding" ScopeBinding.Inverse.transform
+    |> pass "StringToCharP" StringToCharP.transform
   in
 
   (*print_endline (ApiAst.show_decls api);*)

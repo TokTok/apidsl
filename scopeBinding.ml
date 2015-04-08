@@ -14,6 +14,16 @@ let map_uname symtab v scopes uname =
   SymbolTable.lookup symtab scopes uname
 
 
+let rec find_this symtab ns = function
+  | [] ->
+      SymbolTable.lookup symtab [ns] "this"
+  | _ :: tl as scopes ->
+      try
+        let scopes = ns :: scopes in
+        SymbolTable.lookup symtab scopes "this"
+      with Not_found ->
+        find_this symtab ns tl
+
 let map_lname symtab v scopes lname =
   if String.length lname > 3 &&
      String.sub lname (String.length lname - 2) 2 = "_t" then
@@ -22,8 +32,8 @@ let map_lname symtab v scopes lname =
     | -1 ->
         (* If not, it must be a user-defined type with "this" struct. *)
         let ns = String.sub lname 0 (String.length lname - 2) in
-        let scopes = ns :: List.tl scopes in
-        SymbolTable.lookup symtab scopes "this"
+        let scopes = List.tl scopes in
+        find_this symtab ns scopes
     | resolved ->
         resolved
   else

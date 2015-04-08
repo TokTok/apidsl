@@ -27,7 +27,9 @@ let prepend_ns ~ignore_inline ns name =
 
 
 let resolve_ns symtab ns =
-  List.map (ns_map (SymbolTable.name symtab)) ns
+  ns
+  |> List.map (ns_map (SymbolTable.name symtab))
+  |> List.map (ns_map String.lowercase)
 
 
 let fold_namespace v (symtab, ignore_first, ns) name decls =

@@ -20,8 +20,8 @@ let upper	= ['A'-'Z']
 
 let digit	= ['0'-'9']
 
-let lname	= lower (digit | lower | '_')*
 let uname	= upper (digit | upper | '_')*
+let lname	= lower (digit | upper | lower | '_')*
 
 
 let ws	= [' ' '\t' '\r']
@@ -73,6 +73,7 @@ and normal state =
 | ";"					{ SEMICOLON }
 
 | digit+ as s				{ NUMBER (int_of_string s) }
+| lname as s "::this"			{ LNAME (s ^ "_t") }
 | lname as s				{ LNAME s }
 | uname as s				{ UNAME s }
 

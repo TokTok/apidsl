@@ -109,7 +109,12 @@ let lookup (_, root : t) scopes name =
       (fun scope -> function
          | [] -> assert false
          | current :: scopes ->
-             let scope = StringMap.find scope current.children in
+             let scope =
+               try
+                 StringMap.find scope current.children
+               with Not_found ->
+                 raise Not_found
+             in
              scope :: current :: scopes
       ) scopes [root]
   in
