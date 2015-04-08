@@ -15,8 +15,8 @@ let (|!) x msg =
   x
 
 
-let main () =
-  let ApiAst.Api (pre, api, post) = parse "tox.h" in
+let main input =
+  let ApiAst.Api (pre, api, post) = parse input in
 
   let api =
     api
@@ -70,4 +70,6 @@ let main () =
 
 let () =
   (*Printexc.record_backtrace true;*)
-  main ()
+  match Sys.argv with
+  | [|_; input|] -> main input
+  | _ -> print_endline "Usage: apigen <file>"
