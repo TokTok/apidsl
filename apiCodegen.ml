@@ -161,9 +161,15 @@ let cg_parameter fmt = function
         cg_lname lname
 
 
-let cg_parameters fmt params =
-  Format.fprintf fmt "(%a)"
-    (cg_list ~sep:", " cg_parameter) params
+let cg_parameters fmt = function
+  | [] ->
+      if c_mode then
+        Format.pp_print_string fmt "(void)"
+      else
+        Format.pp_print_string fmt "()"
+  | params ->
+      Format.fprintf fmt "(%a)"
+        (cg_list ~sep:", " cg_parameter) params
 
 
 let rec cg_expr fmt = function
