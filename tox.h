@@ -580,7 +580,7 @@ uint8_t[size] savedata {
  * This function will attempt to connect to the node using UDP and TCP at the
  * same time.
  *
- * Tox will use the node as a TCP relay in case ${options.udp_enabled} was
+ * Tox will use the node as a TCP relay in case ${options.this.udp_enabled} was
  * false, and also to connect to friends that are in TCP-only mode. Tox will
  * also use the TCP connection when NAT hole punching is slow, and later switch
  * to UDP if hole punching succeeds.
@@ -780,7 +780,7 @@ inline namespace self {
     /**
      * Set the nickname for the Tox client.
      *
-     * Nickname length cannot exceed $max. If length is 0, the name
+     * Nickname length cannot exceed $MAX_NAME_LENGTH. If length is 0, the name
      * parameter is ignored (it can be NULL), and the nickname is set back to empty.
      *
      * @param name A byte array containing the new nickname.
@@ -821,7 +821,7 @@ inline namespace self {
     /**
      * Set the client's status message.
      *
-     * Status message length cannot exceed $max. If
+     * Status message length cannot exceed $MAX_STATUS_MESSAGE_LENGTH. If
      * length is 0, the status parameter is ignored (it can be NULL), and the
      * user status is set back to empty.
      */

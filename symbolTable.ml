@@ -3,7 +3,7 @@ type scopes = string list [@@deriving show]
 
 type scope = {
   name     : string;
-  symbols  : int StringMap.t;
+  id       : int;
   children : scope StringMap.t;
 } [@@deriving show]
 
@@ -13,40 +13,13 @@ type t = string IntMap.t * scope [@@deriving show]
 
 let empty name = {
   name;
-  symbols  = StringMap.empty;
+  id = 0;
   children = StringMap.empty;
 }
 
 
-let root = {
-  (empty "<root>") with
-  symbols  = (
-    snd @@ List.fold_left
-      (fun (id, symbols) sym ->
-         id + 1, StringMap.add sym id symbols)
-      (0, StringMap.empty)
-      [
-        "user_data"; (* Used as name for user_data parameter. *)
-        "callback"; (* Used as name for callback parameter. *)
-        "error"; (* Used as name for error parameter. *)
-        "void";
-        "bool";
-        "uint8_t";
-        "uint16_t";
-        "uint32_t";
-        "uint64_t";
-        "size_t";
-        "string";
-      ]
-  );
-}
-
-
 let enter_scope scope name =
-  try
-    StringMap.find name scope.children
-  with Not_found ->
-    empty name
+  StringMap.find name scope.children
 
 
 let leave_scope scope child =
@@ -62,48 +35,74 @@ let scoped scope name f x =
 
 
 let add ?(extend=false) name scope =
-  if StringMap.mem name scope.symbols then
+  if StringMap.mem name scope.children then
     if not extend then
       failwith @@ "duplicate name: " ^ name
     else
       scope
   else
-    let symbols =
-      StringMap.add name (StringMap.cardinal scope.symbols) scope.symbols
+    let children =
+      StringMap.add name { (empty name) with id = StringMap.cardinal scope.children } scope.children
     in
-    { scope with symbols }
+    { scope with children }
 
 
-let rec assign_ids table scope =
-  let symbols =
+let root =
+  List.fold_left
+    (fun root sym -> add sym root)
+    (empty "<root>")
+    [
+      "user_data"; (* Used as name for user_data parameter. *)
+      "callback"; (* Used as name for callback parameter. *)
+      "error"; (* Used as name for error parameter. *)
+      "void";
+      "bool";
+      "uint8_t";
+      "uint16_t";
+      "uint32_t";
+      "uint64_t";
+      "size_t";
+      "string";
+    ]
+
+
+let rec renumber_ids table scope =
+  let children =
     let table_size = IntMap.cardinal table in
-    StringMap.map (fun id -> id + table_size) scope.symbols
+    StringMap.map (fun child -> { child with id = child.id + table_size }) scope.children
   in
+
+  let scope = { scope with children } in
 
   let table =
     StringMap.fold
-      (fun name id table ->
-         assert (not (IntMap.mem id table));
-         IntMap.add id name table
-      ) symbols table
+      (fun name child table ->
+         assert (not (IntMap.mem child.id table));
+         IntMap.add child.id name table
+      ) children table
   in
 
   let table, children =
     StringMap.fold
       (fun ns child (table, children) ->
-         let table, child = assign_ids table child in
+         let table, child = renumber_ids table child in
          table, StringMap.add ns child children
       ) scope.children (table, StringMap.empty)
   in
 
-  table, { scope with symbols; children }
+  table, { scope with children }
 
 
 let make scope =
-  assign_ids IntMap.empty scope
+  renumber_ids IntMap.empty scope
 
 
-let lookup (_, root : t) scopes name =
+let lookup_qualified (_, root : t) scopes path =
+  let name, member =
+    match path with
+    | name :: member -> name, member
+    | [] -> failwith "Empty qualified symbol name"
+  in
   let scopes =
     List.fold_right
       (fun scope -> function
@@ -119,22 +118,39 @@ let lookup (_, root : t) scopes name =
       ) scopes [root]
   in
 
-  let id =
+  let child =
     List.fold_left
-      (fun id scope ->
-         match id with
-         | Some _ -> id
+      (fun child scope ->
+         match child with
+         | Some _ -> child
          | None ->
              try
-               Some (StringMap.find name scope.symbols)
+               Some (StringMap.find name scope.children)
              with Not_found ->
                None
       ) None scopes
   in
 
-  match id with
-  | Some id -> id
-  | None    -> -1
+  let child =
+    List.fold_left
+      (fun child name ->
+         match child with
+         | None -> None
+         | Some child ->
+             try
+               Some (StringMap.find name child.children)
+             with Not_found ->
+               None
+      ) child member
+  in
+
+  match child with
+  | Some child -> child.id
+  | None       -> -1
+
+
+let lookup symtab scopes name =
+  lookup_qualified symtab scopes [name]
 
 
 let name (table, _ : t) = function

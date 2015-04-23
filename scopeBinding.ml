@@ -24,11 +24,12 @@ let rec find_this symtab ns = function
       with Not_found ->
         find_this symtab ns tl
 
-let map_lname symtab v scopes lname =
+let lookup symtab scopes path =
+  let lname = List.hd (List.rev path) in
   if String.length lname > 3 &&
      String.sub lname (String.length lname - 2) 2 = "_t" then
     (* First, it might be a global _t type. *)
-    match SymbolTable.lookup symtab [] lname with
+    match SymbolTable.lookup_qualified symtab [] path with
     | -1 ->
         (* If not, it must be a user-defined type with "this" struct. *)
         let ns = String.sub lname 0 (String.length lname - 2) in
@@ -37,7 +38,34 @@ let map_lname symtab v scopes lname =
     | resolved ->
         resolved
   else
-    SymbolTable.lookup symtab scopes lname
+    SymbolTable.lookup_qualified symtab scopes path
+
+let map_lname symtab v scopes lname =
+  lookup symtab scopes [lname]
+
+
+let map_comment_fragment symtab v scopes = function
+  | Cmtf_Var path ->
+      let path =
+        List.fold_right
+          (fun var path ->
+             match var with
+             | Var_UName name
+             | Var_LName name ->
+                 name :: path
+             | Var_Event ->
+                 match List.rev path with
+                 | hd :: tl ->
+                     List.rev @@ ("event " ^ hd) :: tl
+                 | [] ->
+                     failwith "Empty name after event in comment name reference"
+          ) path []
+      in
+      let var' = lookup symtab scopes path in
+      Cmtf_Var [Var_LName var']
+
+  | comment_fragment ->
+      visit_comment_fragment v scopes comment_fragment
 
 
 let map_enumerator symtab v scopes = function
@@ -120,10 +148,10 @@ let v symtab = {
   map_enumerator = map_enumerator symtab;
   map_decl = map_decl symtab;
   map_error_list = map_error_list symtab;
+  map_comment_fragment = map_comment_fragment symtab;
 
   map_var = visit_var;
   map_macro = visit_macro;
-  map_comment_fragment = visit_comment_fragment;
   map_comment = visit_comment;
   map_size_spec = visit_size_spec;
   map_type_name = visit_type_name;
