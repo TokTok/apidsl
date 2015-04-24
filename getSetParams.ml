@@ -46,7 +46,7 @@ let rec add_types name ty = function
 
 let map_decl v state = function
   | Decl_GetSet (type_name, lname, decls) ->
-      let decls = List.rev_map (add_types lname type_name) decls in
+      let decls = List.map (add_types lname type_name) decls in
 
       Decl_GetSet (type_name, lname, decls)
 
