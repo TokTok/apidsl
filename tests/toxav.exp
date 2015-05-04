@@ -1,0 +1,28 @@
+
+/**
+ * External Tox type.
+ */
+#ifndef TOX_DEFINED
+#define TOX_DEFINED
+typedef struct Tox Tox;
+#endif /* TOX_DEFINED */
+
+/**
+ * ToxAv.
+ */
+#ifndef TOXAV_DEFINED
+#define TOXAV_DEFINED
+typedef struct ToxAv ToxAv;
+#endif /* TOXAV_DEFINED */
+
+/**
+ * Using external Tox type.
+ */
+uint32_t toxav_outer_inner_new(ToxAv *toxAv, Tox *messenger, uint32_t ma);
+
+/**
+ * Same thing.
+ */
+uint32_t toxav_outer_inner_new2(ToxAv *toxAv, Tox *messenger, uint32_t ma);
+
+ToxAv *toxav_new(Tox *messenger, uint32_t max_calls);

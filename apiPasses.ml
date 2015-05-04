@@ -52,3 +52,44 @@ let all pre api post =
   Option.may (Format.fprintf Format.str_formatter "\n%s\n") post;
 
   Format.flush_str_formatter ()
+
+
+let format_error (token, start_p, end_p) =
+  let open Lexing in
+  Printf.sprintf "%s:%d:%d: error at %s"
+    start_p.pos_fname
+    start_p.pos_lnum
+    (start_p.pos_cnum - start_p.pos_bol + 1)
+    (ApiLexer.string_of_token token)
+
+
+let lex state lexbuf =
+  let token = ApiLexer.token state lexbuf in
+  let start_p = Lexing.lexeme_start_p lexbuf in
+  let end_p = Lexing.lexeme_end_p lexbuf in
+  (token, start_p, end_p)
+
+
+let rec parse state lexbuf last_input = let open ApiParser.MenhirInterpreter in
+  function
+  | InputNeeded env ->
+      let last_input = lex state lexbuf in
+      parse state lexbuf (Some last_input) (offer env last_input)
+  | HandlingError env ->
+      handle_error state lexbuf last_input env
+  | Accepted result ->
+      result
+  | Rejected ->
+      failwith "rejected"
+
+and handle_error state lexbuf last_input env = let open ApiParser.MenhirInterpreter in
+  match last_input with
+  | None ->
+      failwith "error at <epsilon>"
+  | Some last_input ->
+      failwith (format_error last_input)
+
+
+let parse_lexbuf lexbuf =
+  let state = ApiLexer.state () in
+  parse state lexbuf None (ApiParser.parse_api_incremental ())

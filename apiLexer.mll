@@ -15,99 +15,99 @@
   }
 }
 
-let lower	= ['a'-'z']
-let upper	= ['A'-'Z']
+let lower       = ['a'-'z']
+let upper       = ['A'-'Z']
 
-let digit	= ['0'-'9']
+let digit       = ['0'-'9']
 
-let uname	= upper (digit | upper | '_')*
-let lname	= lower (digit | upper | lower | '_')*
+let uname       = upper (digit | upper | '_')*
+let lname       = lower (digit | upper | lower | '_')*
 
 
-let ws	= [' ' '\t' '\r']
+let ws  = [' ' '\t' '\r']
 
 
 rule eoi = parse
-| _					{ EOF }
+| _                                     { EOF }
 
 
 and normal state =
   parse
-| '\n'					{ normal state lexbuf }
-| ' '					{ normal state lexbuf }
-| "//" [^'\n']*				{ normal state lexbuf }
+| '\n'                                  { Lexing.new_line lexbuf; normal state lexbuf }
+| ' '                                   { normal state lexbuf }
+| "//" [^'\n']*                         { normal state lexbuf }
 
-| "%{\n"				{ verbatim state [] lexbuf }
+| "%{\n"                                { verbatim state [] lexbuf }
 
-| "#define " uname ([^'\n']|"\\\n")+	{ MACRO (Lexing.lexeme lexbuf) }
+| "#define " uname ([^'\n']|"\\\n")+    { MACRO (Lexing.lexeme lexbuf) }
 
-| "/**"					{ state.state <- LexComment; COMMENT_START }
-| "/**" '*'+				{ state.state <- LexComment; COMMENT_START_BIG }
+| "/**"                                 { state.state <- LexComment; COMMENT_START }
+| "/**" '*'+                            { state.state <- LexComment; COMMENT_START_BIG }
 
-| "class"				{ CLASS }
-| "const"				{ CONST }
-| "enum"				{ ENUM }
-| "error"				{ ERROR }
-| "event"				{ EVENT }
-| "for"					{ FOR }
-| "inline"				{ INLINE }
-| "namespace"				{ NAMESPACE }
-| "sizeof"				{ SIZEOF }
-| "static"				{ STATIC }
-| "struct"				{ STRUCT }
-| "this"				{ THIS }
-| "typedef"				{ TYPEDEF }
-| "with"				{ WITH }
+| "class"                               { CLASS }
+| "const"                               { CONST }
+| "enum"                                { ENUM }
+| "error"                               { ERROR }
+| "event"                               { EVENT }
+| "for"                                 { FOR }
+| "inline"                              { INLINE }
+| "namespace"                           { NAMESPACE }
+| "sizeof"                              { SIZEOF }
+| "static"                              { STATIC }
+| "struct"                              { STRUCT }
+| "this"                                { THIS }
+| "typedef"                             { TYPEDEF }
+| "with"                                { WITH }
 
-| "*"					{ STAR }
-| "{"					{ LBRACE }
-| "}"					{ RBRACE }
-| "("					{ LBRACK }
-| ")"					{ RBRACK }
-| "["					{ LSQBRACK }
-| "]"					{ RSQBRACK }
-| "+"					{ PLUS }
-| "<="					{ LE }
-| "="					{ EQ }
-| ","					{ COMMA }
-| ";"					{ SEMICOLON }
+| "*"                                   { STAR }
+| "{"                                   { LBRACE }
+| "}"                                   { RBRACE }
+| "("                                   { LBRACK }
+| ")"                                   { RBRACK }
+| "["                                   { LSQBRACK }
+| "]"                                   { RSQBRACK }
+| "+"                                   { PLUS }
+| "<="                                  { LE }
+| "="                                   { EQ }
+| ","                                   { COMMA }
+| ";"                                   { SEMICOLON }
 
-| digit+ as s				{ NUMBER (int_of_string s) }
-| lname as s "::this"			{ LNAME (s ^ "_t") }
-| lname as s				{ LNAME s }
-| uname as s				{ UNAME s }
+| digit+ as s                           { NUMBER (int_of_string s) }
+| lname as s "::this"                   { LNAME (s ^ "_t") }
+| lname as s                            { LNAME s }
+| uname as s                            { UNAME s }
 
-| eof					{ EOF }
-| _ as c				{ raise (Lexing_error (lexeme_start_p lexbuf, Char.escaped c)) }
+| eof                                   { EOF }
+| _ as c                                { raise (Lexing_error (lexeme_start_p lexbuf, Char.escaped c)) }
 
 
 and verbatim state text =
   parse
-| ['\n' '%']
-| [^'\n' '%']+ as s			{ verbatim state (s :: text) lexbuf }
-| "\n%}"				{ VERBATIM (String.concat "" (List.rev text)) }
+| '\n'                                  { Lexing.new_line lexbuf; verbatim state ("\n" :: text) lexbuf }
+| '%' | [^'\n' '%']+ as s               { verbatim state (s :: text) lexbuf }
+| "\n%}"                                { Lexing.new_line lexbuf; VERBATIM (String.concat "" (List.rev text)) }
 
 
 and comment state =
   parse
-| "$" (lname as s)			{ LNAME s }
-| "$" (uname as s)			{ UNAME s }
-| "${"					{ state.state <- LexVariable; VAR_START }
+| "$" (lname as s)                      { LNAME s }
+| "$" (uname as s)                      { UNAME s }
+| "${"                                  { state.state <- LexVariable; VAR_START }
 
-| [^'$''\n']+ as c			{ COMMENT c }
-| '\n' ' '+ '*'				{ COMMENT_BREAK }
-| '\n' ' '+ '*'+ '/'			{ state.state <- LexNormal; COMMENT_END }
-| _ as c				{ raise (Lexing_error (lexeme_start_p lexbuf, Char.escaped c)) }
+| [^'$''\n']+ as c                      { COMMENT c }
+| '\n' ' '+ '*'                         { Lexing.new_line lexbuf; COMMENT_BREAK }
+| '\n' ' '+ '*'+ '/'                    { Lexing.new_line lexbuf; state.state <- LexNormal; COMMENT_END }
+| _ as c                                { raise (Lexing_error (lexeme_start_p lexbuf, Char.escaped c)) }
 
 
 and variable state =
   parse
-| '.'					{ variable state lexbuf }
-| "}"					{ state.state <- LexComment; VAR_END }
-| "event "				{ EVENT }
-| lname as s				{ LNAME s }
-| uname as s				{ UNAME s }
-| _ as c				{ raise (Lexing_error (lexeme_start_p lexbuf, Char.escaped c)) }
+| '.'                                   { variable state lexbuf }
+| "}"                                   { state.state <- LexComment; VAR_END }
+| "event "                              { EVENT }
+| lname as s                            { LNAME s }
+| uname as s                            { UNAME s }
+| _ as c                                { raise (Lexing_error (lexeme_start_p lexbuf, Char.escaped c)) }
 
 
 {
