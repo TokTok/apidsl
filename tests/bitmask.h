@@ -1,16 +1,39 @@
-bitmask USER_STATUS {
+namespace toxav
+{
+
+/**
+ * The call state is a set of operations that are currently being performed.
+ * A value of 0 means we are neither sending nor receiving anything, meaning,
+ * one of the sides requested pause. The call will be resumed once the side
+ * that initiated pause resumes it.
+ */
+bitmask CALL_STATE {
   /**
-   * User is online and available.
+   * The friend is sending audio (we are receiving).
    */
-  NONE,
+  SENDING_A,
   /**
-   * User is away. Clients can set this e.g. after a user defined
-   * inactivity time.
+   * The friend is sending video (we are receiving).
    */
-  AWAY,
+  SENDING_V,
   /**
-   * User is busy. Signals to other clients that this client does not
-   * currently wish to communicate.
+   * The friend is receiving audio (we are sending).
    */
-  BUSY,
+  RECEIVING_A,
+  /**
+   * The friend is receiving video (we are sending).
+   */
+  RECEIVING_V,
+  /**
+   * The call has finished. This is the final state after which no more state
+   * transitions can occur for the call.
+   */
+  END,
+  /**
+   * Set by the AV core if an error occurred on the remote end. This call
+   * state will never be triggered in combination with other call states.
+   */
+  ERROR,
+}
+
 }
