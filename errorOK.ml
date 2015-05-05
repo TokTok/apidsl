@@ -9,7 +9,7 @@ let map_err_list v state enumerators =
       Cmtf_Doc " The function returned successfully.";
     ]
   in
-  Enum_Name (comment, "OK") :: enumerators
+  Enum_Name (comment, "OK", None) :: enumerators
 
 
 let map_error_list v state = function

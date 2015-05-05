@@ -10,11 +10,11 @@ let map_err_list v state enumerators =
                 was not expected.";
     ]
   in
-  Enum_Name (comment, "NULL") :: enumerators
+  Enum_Name (comment, "NULL", None) :: enumerators
 
 
 let map_error_list v state = function
-  | Err_List (Enum_Name (Cmt_None, "NULL") :: enumerators) ->
+  | Err_List (Enum_Name (Cmt_None, "NULL", None) :: enumerators) ->
       Err_List (map_err_list v state enumerators)
 
   | error_list ->
@@ -22,7 +22,7 @@ let map_error_list v state = function
 
 
 let map_decl v state = function
-  | Decl_Error (lname, Enum_Name (Cmt_None, "NULL") :: enumerators) ->
+  | Decl_Error (lname, Enum_Name (Cmt_None, "NULL", None) :: enumerators) ->
       Decl_Error (lname, map_err_list v state enumerators)
 
   | decl ->

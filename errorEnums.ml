@@ -4,7 +4,7 @@ open ApiMap
 
 let map_decl v state = function
   | Decl_Error (lname, enumerators) ->
-      Decl_Enum (true, lname, enumerators)
+      Decl_Enum (Enum_Class, lname, enumerators)
 
   | decl ->
       visit_decl v state decl

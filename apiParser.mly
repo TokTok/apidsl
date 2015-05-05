@@ -12,6 +12,7 @@ open ApiAst
 
 %token VAR_START VAR_END
 
+%token BITMASK
 %token CLASS
 %token CONST
 %token ENUM
@@ -118,8 +119,12 @@ error_decl
 
 
 enum_decl
-	: ENUM bool_opt(CLASS) uname LBRACE enumerators RBRACE
-		{ Decl_Enum ($2, $3, $5) }
+	: ENUM uname LBRACE enumerators RBRACE
+		{ Decl_Enum (Enum_Normal, $2, $4) }
+	| ENUM CLASS uname LBRACE enumerators RBRACE
+		{ Decl_Enum (Enum_Class, $3, $5) }
+	| BITMASK uname LBRACE enumerators RBRACE
+		{ Decl_Enum (Enum_Bitmask, $2, $4) }
 
 enumerators
 	: enumerator_list
@@ -133,7 +138,7 @@ enumerator_list
 
 enumerator
 	: comment_block_opt uname COMMA
-		{ Enum_Name ($1, $2) }
+		{ Enum_Name ($1, $2, None) }
 	| NAMESPACE uname LBRACE enumerators RBRACE
 		{ Enum_Namespace ($2, $4) }
 

@@ -11,7 +11,7 @@ let fold_scoped f v uname decls scope =
 
 
 let fold_enumerator v scope = function
-  | Enum_Name (_, uname) ->
+  | Enum_Name (_, uname, value) ->
       scope
       |> SymbolTable.add uname
 

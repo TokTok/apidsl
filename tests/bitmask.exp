@@ -1,0 +1,22 @@
+
+enum USER_STATUS {
+
+  /**
+   * User is online and available.
+   */
+  USER_STATUS_NONE = 1,
+  
+  /**
+   * User is away. Clients can set this e.g. after a user defined
+   * inactivity time.
+   */
+  USER_STATUS_AWAY = 2,
+  
+  /**
+   * User is busy. Signals to other clients that this client does not
+   * currently wish to communicate.
+   */
+  USER_STATUS_BUSY = 4,
+  
+};
+

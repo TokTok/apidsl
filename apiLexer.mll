@@ -44,6 +44,7 @@ and normal state =
 | "/**"                                 { state.state <- LexComment; COMMENT_START }
 | "/**" '*'+                            { state.state <- LexComment; COMMENT_START_BIG }
 
+| "bitmask"                             { BITMASK }
 | "class"                               { CLASS }
 | "const"                               { CONST }
 | "enum"                                { ENUM }
@@ -129,6 +130,7 @@ and variable state =
     | COMMENT_END -> "COMMENT_END"
     | COMMENT c -> "COMMENT " ^ c
 
+    | BITMASK -> "BITMASK"
     | CLASS -> "CLASS"
     | CONST -> "CONST"
     | ENUM -> "ENUM"

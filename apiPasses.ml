@@ -44,6 +44,7 @@ let all pre api post =
     |> pass "Constants" Constants.transform
     |> pass "ScopeBinding" ScopeBinding.Inverse.transform
     |> pass "StringToCharP" StringToCharP.transform
+    |> pass "EnumBitmasks" EnumBitmasks.transform
   in
 
   Option.may (Format.pp_print_string Format.str_formatter) pre;

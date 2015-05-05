@@ -44,7 +44,7 @@ type 'id type_name =
 
 
 type 'id enumerator =
-  | Enum_Name of 'id comment * 'id uname
+  | Enum_Name of 'id comment * 'id uname * int option
   | Enum_Namespace of 'id uname * 'id enumerator list
   [@@deriving show]
 
@@ -69,11 +69,18 @@ type 'id expr =
   [@@deriving show]
 
 
+type enum_kind =
+  | Enum_Normal
+  | Enum_Class
+  | Enum_Bitmask
+  [@@deriving show]
+
+
 type 'id decl =
   | Decl_Class of 'id lname * 'id decl list
   | Decl_Comment of 'id comment * 'id decl
   | Decl_Const of 'id uname * 'id expr
-  | Decl_Enum of bool * 'id uname * 'id enumerator list
+  | Decl_Enum of enum_kind * 'id uname * 'id enumerator list
   | Decl_Error of 'id lname * 'id enumerator list
   | Decl_Event of 'id lname * 'id decl list
   | Decl_Function of 'id type_name * 'id lname * 'id parameter list * 'id error_list

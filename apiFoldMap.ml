@@ -109,10 +109,10 @@ let visit_type_name v state = function
 
 
 let visit_enumerator v state = function
-  | Enum_Name (comment, uname) ->
+  | Enum_Name (comment, uname, value) ->
       let state, comment = v.fold_comment v state comment in
       let state, uname = v.fold_uname v state uname in
-      state, Enum_Name (comment, uname)
+      state, Enum_Name (comment, uname, value)
   | Enum_Namespace (uname, enumerators) ->
       let state, uname = v.fold_uname v state uname in
       let state, enumerators = visit_list v.fold_enumerator v state enumerators in

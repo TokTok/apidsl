@@ -128,11 +128,18 @@ let cg_function_name fmt = function
         cg_lname name
 
 
+let cg_enum_value fmt = function
+  | None -> ()
+  | Some value ->
+      Format.fprintf fmt " = %d" value
+
+
 let rec cg_enumerator fmt = function
-  | Enum_Name (comment, uname) ->
-      Format.fprintf fmt "%a@,%a,@,"
+  | Enum_Name (comment, uname, value) ->
+      Format.fprintf fmt "%a@,%a%a,@,"
         cg_comment comment
         cg_uname uname
+        cg_enum_value value
   | Enum_Namespace (uname, enums) ->
       Format.fprintf fmt "@,namespace %a %a"
         cg_uname uname
@@ -236,8 +243,9 @@ let rec cg_decl_qualified qualifier fmt = function
       Format.fprintf fmt "@,const %a = %a;"
         cg_uname uname
         cg_expr expr
-  | Decl_Enum (is_class, uname, enumerators) ->
+  | Decl_Enum (kind, uname, enumerators) ->
       assert (qualifier = "");
+      let is_class = kind = Enum_Class in
       let after_brace =
         if is_class && c_mode then
           Some (" " ^ uname)
