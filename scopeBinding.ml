@@ -10,10 +10,6 @@ let scoped scopes name f =
   f scopes
 
 
-let map_uname symtab v scopes uname =
-  SymbolTable.lookup symtab scopes uname
-
-
 let rec find_this symtab ns = function
   | [] ->
       SymbolTable.lookup symtab [ns] "this"
@@ -40,8 +36,18 @@ let lookup symtab scopes path =
   else
     SymbolTable.lookup_qualified symtab scopes path
 
+
+let map_uname symtab v scopes uname =
+  try
+    lookup symtab scopes [uname]
+  with Not_found ->
+    failwith @@ "Unresolved symbol: " ^ uname
+
 let map_lname symtab v scopes lname =
-  lookup symtab scopes [lname]
+  try
+    lookup symtab scopes [lname]
+  with Not_found ->
+    failwith @@ "Unresolved symbol: " ^ lname
 
 
 let map_comment_fragment symtab v scopes = function
