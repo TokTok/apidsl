@@ -1,0 +1,29 @@
+
+#ifndef FOOBAR_DEFINED
+#define FOOBAR_DEFINED
+typedef struct FooBar FooBar;
+#endif /* FOOBAR_DEFINED */
+
+/**
+ * yoy
+ */
+typedef void foobar_thing_cb(FooBar *fooBar, void *user_data);
+
+
+/**
+ * Set the callback for the `thing` event. Pass NULL to unset.
+ *
+ */
+void foobar_callback_thing(FooBar *fooBar, foobar_thing_cb *callback, void *user_data);
+
+/**
+ * yoy
+ */
+typedef void foobar_bleh_thing_cb(FooBar *fooBar, void *user_data);
+
+
+/**
+ * Set the callback for the `bleh_thing` event. Pass NULL to unset.
+ *
+ */
+void foobar_callback_bleh_thing(FooBar *fooBar, foobar_bleh_thing_cb *callback, void *user_data);

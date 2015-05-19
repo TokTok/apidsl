@@ -19,7 +19,6 @@ let fold_decl v (symtab, ns) = function
         resolve_ns symtab ns
         |> (function
             | [] -> assert false
-            | [_] as ns -> ns
             | ns -> ns |> List.rev |> List.tl |> List.rev (* Skip the first namespace. *)
           )
         |> prepend_ns
