@@ -196,7 +196,7 @@ typedef enum TOXAV_ERR_NEW {
 /**
  * Start new A/V session. There can only be only one session per Tox instance.
  */
-ToxAV *toxav_new(ToxAV *tox, TOXAV_ERR_NEW *error);
+ToxAV *toxav_new(Tox *tox, TOXAV_ERR_NEW *error);
 
 /**
  * Releases all resources associated with the A/V session.
@@ -210,7 +210,7 @@ void toxav_kill(ToxAV *toxAV);
 /**
  * Returns the Tox instance the A/V object was created for.
  */
-ToxAV *toxav_get_tox(const ToxAV *toxAV);
+Tox *toxav_get_tox(const ToxAV *toxAV);
 
 
 /*******************************************************************************
