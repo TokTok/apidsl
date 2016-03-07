@@ -73,9 +73,12 @@ let lex state lexbuf =
 
 let rec parse state lexbuf last_input = let open ApiParser.MenhirInterpreter in
   function
-  | InputNeeded env ->
+  | InputNeeded env as checkpoint ->
       let last_input = lex state lexbuf in
-      parse state lexbuf (Some last_input) (offer env last_input)
+      parse state lexbuf (Some last_input) (offer checkpoint last_input)
+  | Shifting _
+  | AboutToReduce _ as checkpoint ->
+      parse state lexbuf last_input (resume checkpoint)
   | HandlingError env ->
       handle_error state lexbuf last_input env
   | Accepted result ->
@@ -93,4 +96,4 @@ and handle_error state lexbuf last_input env = let open ApiParser.MenhirInterpre
 
 let parse_lexbuf lexbuf =
   let state = ApiLexer.state () in
-  parse state lexbuf None (ApiParser.parse_api_incremental ())
+  parse state lexbuf None (ApiParser.Incremental.parse_api Lexing.dummy_pos)
