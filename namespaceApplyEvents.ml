@@ -14,7 +14,7 @@ let resolve_ns symtab ns =
 
 
 let fold_decl v (symtab, ns) = function
-  | Decl_Event (lname, _) ->
+  | Decl_Event (lname, _, _) ->
       let symtab =
         resolve_ns symtab ns
         |> (function

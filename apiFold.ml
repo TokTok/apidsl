@@ -87,6 +87,9 @@ let visit_type_name v state = function
   | Ty_LName lname ->
       let state = v.fold_lname v state lname in
       state
+  | Ty_TVar lname ->
+      let state = v.fold_lname v state lname in
+      state
   | Ty_Array (lname, size_spec) ->
       let state = v.fold_lname v state lname in
       let state = v.fold_size_spec v state size_spec in
@@ -203,7 +206,7 @@ let visit_decl v state = function
       let state = v.fold_lname v state lname in
       let state = visit_list v.fold_parameter v state parameters in
       state
-  | Decl_Event (lname, decl) ->
+  | Decl_Event (lname, is_const, decl) ->
       let state = v.fold_lname v state lname in
       let state = visit_list v.fold_decl v state decl in
       state

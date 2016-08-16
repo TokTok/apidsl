@@ -27,3 +27,17 @@ typedef void foobar_bleh_thing_cb(FooBar *fooBar, void *user_data);
  *
  */
 void foobar_callback_bleh_thing(FooBar *fooBar, foobar_bleh_thing_cb *callback, void *user_data);
+
+/**
+ * Heyo haha.
+ */
+typedef void *foobar_bleh_otherthing_cb(FooBar *fooBar, uint32_t fluff, void *user_data);
+
+
+/**
+ * Set the callback for the `bleh_otherthing` event. Pass NULL to unset.
+ *
+ */
+void foobar_callback_bleh_otherthing(FooBar *fooBar, foobar_bleh_otherthing_cb *callback);
+
+void *foobar_iterate(FooBar *fooBar, void *user_data);

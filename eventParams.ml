@@ -4,7 +4,7 @@ open ApiMap
 
 let map_decl v symtab = function
 
-  | Decl_Event (event_name, [
+  | Decl_Event (event_name, is_const, [
       Decl_Comment (comment,
                     Decl_Typedef (cb_return, cb_type_name, cb_params));
       Decl_Function (type_name, fname, parameters, error_list);
@@ -23,9 +23,14 @@ let map_decl v symtab = function
       in
 
       let cb_params = cb_params @ [user_data] in
-      let parameters = parameters @ [callback; user_data] in
+      let parameters =
+        if is_const then
+          parameters @ [callback]
+        else
+          parameters @ [callback; user_data]
+      in
 
-      Decl_Event (event_name, [
+      Decl_Event (event_name, is_const, [
           Decl_Comment (comment,
                         Decl_Typedef (cb_return, cb_type_name, cb_params));
           Decl_Function (type_name, fname, parameters, error_list);

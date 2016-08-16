@@ -87,6 +87,9 @@ let visit_type_name v state = function
   | Ty_LName lname ->
       let lname = v.map_lname v state lname in
       Ty_LName lname
+  | Ty_TVar lname ->
+      let lname = v.map_lname v state lname in
+      Ty_TVar lname
   | Ty_Array (lname, size_spec) ->
       let lname = v.map_lname v state lname in
       let size_spec = v.map_size_spec v state size_spec in
@@ -203,10 +206,10 @@ let visit_decl v state = function
       let lname = v.map_lname v state lname in
       let parameters = visit_list v.map_parameter v state parameters in
       Decl_Typedef (type_name, lname, parameters)
-  | Decl_Event (lname, decl) ->
+  | Decl_Event (lname, is_const, decl) ->
       let lname = v.map_lname v state lname in
       let decl = visit_list v.map_decl v state decl in
-      Decl_Event (lname, decl)
+      Decl_Event (lname, is_const, decl)
   | Decl_Section frags ->
       let frags = visit_list v.map_comment_fragment v state frags in
       Decl_Section frags

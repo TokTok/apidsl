@@ -132,11 +132,11 @@ let map_decl symtab v scopes = function
       let lname' = v.map_lname v scopes lname in
       let decls = scoped scopes lname (flip (visit_list v.map_decl v) decls) in
       Decl_GetSet (type_name, lname', decls)
-  | Decl_Event (lname, decls) ->
+  | Decl_Event (lname, is_const, decls) ->
       let lname = "event " ^ lname in
       let lname' = v.map_lname v scopes lname in
       let decls = scoped scopes lname (flip (visit_list v.map_decl v) decls) in
-      Decl_Event (lname', decls)
+      Decl_Event (lname', is_const, decls)
   | Decl_Typedef (type_name, lname, parameters) ->
       let type_name = scoped scopes lname (flip (v.map_type_name v) type_name) in
       let lname' = v.map_lname v scopes lname in

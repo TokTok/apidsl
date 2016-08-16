@@ -74,7 +74,7 @@ let fold_decl v scope = function
       |> SymbolTable.add lname
       |> fold_scoped v.fold_decl v lname decls
 
-  | Decl_Event (lname, decl) ->
+  | Decl_Event (lname, _, decl) ->
       let lname = "event " ^ lname in
       scope
       |> SymbolTable.add lname

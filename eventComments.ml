@@ -2,7 +2,7 @@ open ApiAst
 open ApiMap
 
 
-let make_event comment event_name typedef func =
+let make_event comment event_name is_const typedef func =
   let comment =
     match comment with
     | Cmt_Doc frags ->
@@ -18,7 +18,7 @@ let make_event comment event_name typedef func =
     | Cmt_None -> Cmt_None
   in
 
-  Decl_Event (event_name, [
+  Decl_Event (event_name, is_const, [
       typedef;
       Decl_Comment (comment, func);
     ])
@@ -26,20 +26,20 @@ let make_event comment event_name typedef func =
 
 let map_decl v symtab = function
 
-  | Decl_Event (event_name, [
+  | Decl_Event (event_name, is_const, [
       typedef;
       func;
     ]) ->
       let comment = Cmt_Doc [] in
-      make_event comment event_name typedef func
+      make_event comment event_name is_const typedef func
 
   | Decl_Comment (
       comment,
-      Decl_Event (event_name, [
+      Decl_Event (event_name, is_const, [
           typedef;
           func;
         ])) ->
-      make_event comment event_name typedef func
+      make_event comment event_name is_const typedef func
 
   | decl ->
       visit_decl v symtab decl

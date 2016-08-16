@@ -104,6 +104,9 @@ let rec cg_type_name fmt = function
         Format.fprintf fmt "struct ";
       Format.fprintf fmt "%a "
         cg_lname lname
+  | Ty_TVar lname ->
+      Format.fprintf fmt "`%a "
+        cg_lname lname
   | Ty_Array (lname, size_spec) ->
       Format.fprintf fmt "%a%a "
         cg_lname lname
@@ -302,10 +305,11 @@ let rec cg_decl_qualified qualifier fmt = function
         cg_type_name type_name
         cg_lname lname
         cg_parameters parameters
-  | Decl_Event (lname, decl) ->
+  | Decl_Event (lname, is_const, decl) ->
       assert (qualifier = "");
-      Format.fprintf fmt "@,event %a %a"
+      Format.fprintf fmt "@,event %a%s %a"
         cg_lname lname
+        (if is_const then " const" else "")
         (cg_braced cg_decls) decl
   | Decl_Inline (decl) ->
       assert (qualifier = "");

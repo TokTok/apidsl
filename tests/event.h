@@ -16,5 +16,14 @@ class fooBar
        */
       typedef void();
     }
+
+    event otherthing const {
+      /**
+       * Heyo haha.
+       */
+      typedef `a(uint32_t fluff);
+    }
   }
+
+  `a iterate(`a user_data);
 }

@@ -14,9 +14,9 @@ let fold_decl v (symtab, in_event) = function
 
       (symtab, in_event), Decl_Function (type_name, lname, parameters, error_list)
 
-  | Decl_Event (lname, decls) ->
+  | Decl_Event (lname, is_const, decls) ->
       let (symtab, _), decls = visit_decls v (symtab, true) decls in
-      (symtab, false), Decl_Event (lname, decls)
+      (symtab, false), Decl_Event (lname, is_const, decls)
 
   | decl ->
       visit_decl v (symtab, in_event) decl

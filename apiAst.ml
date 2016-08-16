@@ -36,6 +36,7 @@ type 'id size_spec =
 type 'id type_name =
   | Ty_UName of 'id uname
   | Ty_LName of 'id lname
+  | Ty_TVar of 'id lname
   | Ty_Array of 'id lname * 'id size_spec
   | Ty_Auto
   | Ty_Const of 'id type_name
@@ -82,7 +83,7 @@ type 'id decl =
   | Decl_Const of 'id uname * 'id expr
   | Decl_Enum of enum_kind * 'id uname * 'id enumerator list
   | Decl_Error of 'id lname * 'id enumerator list
-  | Decl_Event of 'id lname * 'id decl list
+  | Decl_Event of 'id lname * bool * 'id decl list
   | Decl_Function of 'id type_name * 'id lname * 'id parameter list * 'id error_list
   | Decl_GetSet of 'id type_name * 'id lname * 'id decl list
   | Decl_Macro of macro

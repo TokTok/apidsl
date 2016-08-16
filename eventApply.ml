@@ -7,7 +7,7 @@ let fold_decl v (symtab, event) = function
       SymbolTable.rename symtab lname
         (fun name -> event ^ "_" ^ name), event
 
-  | Decl_Event (lname, decls) ->
+  | Decl_Event (lname, _, decls) ->
       let symtab, _ =
         let event = SymbolTable.name symtab lname in
         visit_list v.fold_decl v (symtab, event) decls

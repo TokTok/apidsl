@@ -94,6 +94,9 @@ let visit_type_name v state = function
   | Ty_LName lname ->
       let state, lname = v.fold_lname v state lname in
       state, Ty_LName lname
+  | Ty_TVar lname ->
+      let state, lname = v.fold_lname v state lname in
+      state, Ty_TVar lname
   | Ty_Array (lname, size_spec) ->
       let state, lname = v.fold_lname v state lname in
       let state, size_spec = v.fold_size_spec v state size_spec in
@@ -210,10 +213,10 @@ let visit_decl v state = function
       let state, lname = v.fold_lname v state lname in
       let state, parameters = visit_list v.fold_parameter v state parameters in
       state, Decl_Typedef (type_name, lname, parameters)
-  | Decl_Event (lname, decl) ->
+  | Decl_Event (lname, is_const, decl) ->
       let state, lname = v.fold_lname v state lname in
       let state, decl = visit_list v.fold_decl v state decl in
-      state, Decl_Event (lname, decl)
+      state, Decl_Event (lname, is_const, decl)
   | Decl_Section frags ->
       let state, frags = visit_list v.fold_comment_fragment v state frags in
       state, Decl_Section frags

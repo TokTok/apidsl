@@ -3,7 +3,7 @@ open ApiFold
 
 
 let fold_decl v symtab = function
-  | Decl_Event (lname, _) ->
+  | Decl_Event (lname, _, _) ->
       SymbolTable.rename symtab lname
         (fun name ->
            assert (String.sub name 0 6 = "event ");

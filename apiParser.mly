@@ -28,7 +28,7 @@ open ApiAst
 %token TYPEDEF
 %token WITH
 
-%token STAR LBRACE RBRACE LBRACK RBRACK LSQBRACK RSQBRACK
+%token BACKTICK STAR LBRACE RBRACE LBRACK RBRACK LSQBRACK RSQBRACK
 %token PLUS EQ LE
 %token COMMA SEMICOLON
 
@@ -85,8 +85,8 @@ macro_decl
 
 
 event_decl
-	: EVENT lname LBRACE typedef_decl RBRACE
-		{ Decl_Event ($2, [$4]) }
+	: EVENT lname CONST? LBRACE typedef_decl RBRACE
+		{ Decl_Event ($2, $3 <> None, [$5]) }
 
 
 typedef_decl
@@ -214,6 +214,8 @@ type_name
 		{ Ty_Pointer (Ty_LName $1) }
 	| lname LSQBRACK size_spec RSQBRACK
 		{ Ty_Array ($1, $3) }
+	| BACKTICK lname
+		{ Ty_TVar $2 }
 	| THIS
 		{ Ty_Pointer (Ty_LName "this") }
 	| CONST type_name
