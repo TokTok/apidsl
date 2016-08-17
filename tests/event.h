@@ -26,4 +26,6 @@ class fooBar
   }
 
   `a iterate(`a user_data);
+
+  any iterate2(any user_data);
 }

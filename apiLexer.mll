@@ -44,6 +44,7 @@ and normal state =
 | "/**"                                 { state.state <- LexComment; COMMENT_START }
 | "/**" '*'+                            { state.state <- LexComment; COMMENT_START_BIG }
 
+| "any"                                 { ANY }
 | "bitmask"                             { BITMASK }
 | "class"                               { CLASS }
 | "const"                               { CONST }
@@ -131,6 +132,7 @@ and variable state =
     | COMMENT_END -> "COMMENT_END"
     | COMMENT c -> "COMMENT " ^ c
 
+    | ANY -> "ANY"
     | BITMASK -> "BITMASK"
     | CLASS -> "CLASS"
     | CONST -> "CONST"

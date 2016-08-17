@@ -41,3 +41,5 @@ typedef void *foobar_bleh_otherthing_cb(FooBar *fooBar, uint32_t fluff, void *us
 void foobar_callback_bleh_otherthing(FooBar *fooBar, foobar_bleh_otherthing_cb *callback);
 
 void *foobar_iterate(FooBar *fooBar, void *user_data);
+
+void *foobar_iterate2(FooBar *fooBar, void *user_data);

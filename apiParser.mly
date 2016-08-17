@@ -12,6 +12,7 @@ open ApiAst
 
 %token VAR_START VAR_END
 
+%token ANY
 %token BITMASK
 %token CLASS
 %token CONST
@@ -216,6 +217,8 @@ type_name
 		{ Ty_Array ($1, $3) }
 	| BACKTICK lname
 		{ Ty_TVar $2 }
+	| ANY
+		{ Ty_TVar "any" }
 	| THIS
 		{ Ty_Pointer (Ty_LName "this") }
 	| CONST type_name
