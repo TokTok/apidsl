@@ -123,10 +123,11 @@ let map_decl symtab v scopes = function
       let lname' = v.map_lname v scopes lname in
       let enumerators = scoped scopes lname (flip (visit_list v.map_enumerator v) enumerators) in
       Decl_Error (lname', enumerators)
-  | Decl_Struct (lname, decls) ->
+  | Decl_Struct (lname, attrs, decls) ->
+      assert (attrs = []);
       let lname' = v.map_lname v scopes lname in
       let decls = scoped scopes lname (flip (visit_list v.map_decl v) decls) in
-      Decl_Struct (lname', decls)
+      Decl_Struct (lname', [], decls)
   | Decl_GetSet (type_name, lname, decls) ->
       let type_name = scoped scopes lname (flip (v.map_type_name v) type_name) in
       let lname' = v.map_lname v scopes lname in

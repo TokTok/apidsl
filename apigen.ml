@@ -16,7 +16,7 @@ let parse_file file =
 let main input =
   let ApiAst.Api (pre, api, post) = parse_file input in
 
-  (*print_endline (ApiAst.show_decls api);*)
+  (*print_endline (ApiAst.show_decls Format.pp_print_string api);*)
   print_string (ApiPasses.all pre api post);
 ;;
 

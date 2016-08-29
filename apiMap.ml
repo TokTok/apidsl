@@ -188,10 +188,11 @@ let visit_decl v state = function
       let lname = v.map_lname v state lname in
       let enumerators = visit_list v.map_enumerator v state enumerators in
       Decl_Error (lname, enumerators)
-  | Decl_Struct (lname, decls) ->
+  | Decl_Struct (lname, attrs, decls) ->
       let lname = v.map_lname v state lname in
+      let attrs = visit_list v.map_lname v state attrs in
       let decls = visit_list v.map_decl v state decls in
-      Decl_Struct (lname, decls)
+      Decl_Struct (lname, attrs, decls)
   | Decl_Member (type_name, lname) ->
       let type_name = v.map_type_name v state type_name in
       let lname = v.map_lname v state lname in

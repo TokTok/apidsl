@@ -43,7 +43,8 @@ let fold_decls v state decls =
              (Keep, user_state), List.rev replace @ decls
          | Prepend prepend ->
              (Keep, user_state), decl :: List.rev prepend @ decls
-         | _ -> failwith "Unhandled state in fold_decls"
+         | Append append ->
+             (Keep, user_state), decls @ List.rev append @ [decl]
       ) (state, []) decls
   in
   assert (fst state = Keep);
@@ -56,10 +57,9 @@ let fold_decl v state = function
       let state, decl = v.fold_decl v state decl in
       let replacement =
         match fst state with
-        | Keep | Replace [] | Prepend _ as replacement -> replacement
+        | Keep | Replace [] | Append _ | Prepend _ as replacement -> replacement
         | Replace (decl0 :: decls) ->
             Replace (Decl_Comment (comment, decl0) :: decls)
-        | _ -> failwith "Unhandled state"
       in
       (replacement, snd state), Decl_Comment (comment, decl)
   | Decl_Namespace (lname, decls) ->
@@ -70,10 +70,11 @@ let fold_decl v state = function
       let state, lname = v.fold_lname v state lname in
       let state, decls = fold_decls v state decls in
       state, Decl_Class (lname, decls)
-  | Decl_Struct (lname, decls) ->
+  | Decl_Struct (lname, attrs, decls) ->
       let state, lname = v.fold_lname v state lname in
+      let state, attrs = visit_list v.fold_lname v state attrs in
       let state, decls = fold_decls v state decls in
-      state, Decl_Struct (lname, decls)
+      state, Decl_Struct (lname, attrs, decls)
   | Decl_GetSet (type_name, lname, decls) ->
       let state, type_name = v.fold_type_name v state type_name in
       let state, lname = v.fold_lname v state lname in

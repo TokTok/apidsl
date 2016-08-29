@@ -69,7 +69,7 @@ let fold_decl v scope = function
       scope
       |> SymbolTable.add uname
 
-  | Decl_Struct (lname, decls) ->
+  | Decl_Struct (lname, attrs, decls) ->
       scope
       |> SymbolTable.add lname
       |> fold_scoped v.fold_decl v lname decls

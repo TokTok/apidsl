@@ -188,8 +188,9 @@ let visit_decl v state = function
       let state = v.fold_lname v state lname in
       let state = visit_list v.fold_enumerator v state enumerators in
       state
-  | Decl_Struct (lname, decls) ->
+  | Decl_Struct (lname, attrs, decls) ->
       let state = v.fold_lname v state lname in
+      let state = visit_list v.fold_lname v state attrs in
       let state = visit_list v.fold_decl v state decls in
       state
   | Decl_Member (type_name, lname) ->

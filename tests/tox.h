@@ -349,7 +349,7 @@ static class options {
    * this object yourself, and pass it to $default, or call
    * $new to get a new default options object.
    */
-  struct this {
+  struct this [get, set] {
     /**
      * The type of socket to create.
      *

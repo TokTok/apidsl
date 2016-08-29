@@ -31,6 +31,11 @@ let cg_lname = Format.pp_print_string
 let cg_macro fmt (Macro s) = Format.pp_print_string fmt s
 
 
+let cg_attrs fmt = function
+  | [] -> ()
+  | l -> cg_list ~sep:"," cg_lname fmt l
+
+
 let cg_var fmt = function
   | Var_UName uname ->
       Format.fprintf fmt "%a"
@@ -265,7 +270,7 @@ let rec cg_decl_qualified qualifier fmt = function
       Format.fprintf fmt "@,error for %a %a"
         cg_lname lname
         (cg_braced cg_enumerators) enumerators
-  | Decl_Struct (lname, []) ->
+  | Decl_Struct (lname, attrs, []) ->
       assert (qualifier = "");
       let uname = String.uppercase lname in
       if c_mode then (
@@ -274,19 +279,21 @@ let rec cg_decl_qualified qualifier fmt = function
         Format.fprintf fmt "@,#define %a_DEFINED"
           cg_uname uname;
       );
-      Format.fprintf fmt "@,%sstruct %a%s;"
+      Format.fprintf fmt "@,%sstruct %a%a%s;"
         (if c_mode then "typedef " else "")
         cg_lname lname
+        cg_attrs attrs
         (if c_mode then " " ^ lname else "")
       ;
       if c_mode then (
         Format.fprintf fmt "@,#endif /* %a_DEFINED */"
           cg_uname uname;
       );
-  | Decl_Struct (lname, decls) ->
+  | Decl_Struct (lname, attrs, decls) ->
       assert (qualifier = "");
-      Format.fprintf fmt "@,struct %a %a"
+      Format.fprintf fmt "@,struct %a%a %a"
         cg_lname lname
+        cg_attrs attrs
         (cg_braced cg_decls) decls
   | Decl_Member (type_name, lname) ->
       assert (qualifier = "");

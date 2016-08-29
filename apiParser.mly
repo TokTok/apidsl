@@ -108,10 +108,10 @@ member_decl
 
 
 struct_decl
-	: STRUCT THIS LBRACE declarations RBRACE
-		{ Decl_Struct ("this", $4) }
-	| STRUCT THIS SEMICOLON
-		{ Decl_Struct ("this", []) }
+	: STRUCT THIS attributes_opt LBRACE declarations RBRACE
+		{ Decl_Struct ("this", $3, $5) }
+	| STRUCT THIS attributes_opt SEMICOLON
+		{ Decl_Struct ("this", $3, []) }
 
 
 error_decl
@@ -204,6 +204,20 @@ class_decl
 namespace_decl
 	: NAMESPACE lname LBRACE declarations RBRACE
 		{ Decl_Namespace ($2, $4) }
+
+
+attributes_opt
+  : /* empty */
+    { [] }
+  | LSQBRACK lname_list RSQBRACK
+    { List.sort String.compare $2 }
+
+
+lname_list
+  : lname
+    { [$1] }
+  | lname_list COMMA lname
+    { $3 :: $1 }
 
 
 type_name

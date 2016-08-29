@@ -6,6 +6,8 @@ let pass msg f x =
 let all pre api post =
   let api =
     api
+    |> pass "GetSetStruct" GetSetStruct.transform
+    |> pass "ConstFunction" ConstFunction.transform
     |> pass "ThisComments" ThisComments.transform
     |> pass "ErrorNULL" ErrorNULL.transform
     |> pass "ErrorOK" ErrorOK.transform
