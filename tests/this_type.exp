@@ -11,4 +11,4 @@ typedef struct ToxAV ToxAV;
 
 ToxAV *toxav_new(Tox *tox);
 
-Tox *toxav_get_tox(const ToxAV *toxAV);
+Tox *toxav_get_tox(const ToxAV *av);

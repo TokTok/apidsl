@@ -2,6 +2,21 @@ open ApiAst
 open ApiMap
 
 
+let rec string_find_from s i f =
+  if f s.[i] then
+    i
+  else
+    string_find_from s (i + 1) f
+
+
+let make_this_name name =
+  if name = String.lowercase name then
+    name
+  else
+    let idx = string_find_from name 0 (fun c -> c = Char.uppercase c) in
+    String.lowercase @@ String.sub name idx (String.length name - idx)
+
+
 let map_decl v this_name = function
 
   | Decl_Static (Decl_Namespace _)
@@ -32,7 +47,7 @@ let map_decl v this_name = function
       Decl_Typedef (type_name, lname, parameters)
 
   | Decl_Class (lname, decls) ->
-      let decls = visit_list v.map_decl v lname decls in
+      let decls = visit_list v.map_decl v (make_this_name lname) decls in
       Decl_Class (lname, decls)
 
   | decl ->
