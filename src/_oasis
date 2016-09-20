@@ -1,0 +1,20 @@
+OASISFormat: 0.4
+Name:        apidsl
+Version:     0.1
+Synopsis:    C API DSL parser and code generator
+Authors:     Iphy Df
+License:     AGPL-3
+AlphaFeatures: ocamlbuild_more_args
+XOCamlbuildPluginTags: package(ppx_driver.ocamlbuild)
+OCamlVersion: >= 4.02
+Plugins: DevFiles (0.4)
+
+Executable apidsl
+  Path:           .
+  BuildTools:     ocamlbuild
+  MainIs:         apigen.ml
+  BuildDepends:   ppx_deriving.std, menhirLib
+  CompiledObject: best
+
+Test regressions
+  Command: make tests

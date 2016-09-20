@@ -1,8 +1,8 @@
-tests: $(patsubst %.h,%.out,$(wildcard tests/*.h))
+tests: $(patsubst %.h,%.out,$(wildcard src/tests/*.h))
 
-tests/%.out: tests/%.h all
-	-./apigen.native $< > $@ 2>&1
-	diff -u $@ tests/$*.exp
+src/tests/%.out: src/tests/%.h all
+	-cd src && ../apigen.native $(patsubst src/%,%,$<) > $(patsubst src/%,%,$@) 2>&1
+	diff -u $@ src/tests/$*.exp
 	rm -f $@
 
 all:

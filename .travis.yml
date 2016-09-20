@@ -1,0 +1,21 @@
+language: generic
+
+addons:
+  apt:
+    sources:
+      - avsm
+    packages:
+      - opam
+
+cache:
+  directories:
+    - $HOME/.opam
+
+install:
+  - opam init -y
+  - eval `opam config env`
+  - opam install -y ppx_deriving menhir
+
+script:
+  - make
+  - make -C src coverage
