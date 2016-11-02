@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 95032ee7dc868e85040dd63734005b82)
+# DO NOT EDIT (digest: 0e9d5e0301eeace397df289756f2c39e)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -17,8 +17,10 @@ true: annot, bin_annot
 # Executable apidsl
 <apigen.{native,byte}>: package(menhirLib)
 <apigen.{native,byte}>: package(ppx_deriving.std)
+<apigen.{native,byte}>: package(str)
 <*.ml{,i,y}>: package(menhirLib)
 <*.ml{,i,y}>: package(ppx_deriving.std)
+<*.ml{,i,y}>: package(str)
 # OASIS_STOP
 
 true: use_menhir

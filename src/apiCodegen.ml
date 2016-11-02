@@ -2,7 +2,7 @@ open ApiAst
 
 
 module type Params = sig
-    val c_mode : bool
+  val c_mode : bool
 end
 
 module Codegen(P : Params) = struct
@@ -117,9 +117,9 @@ module Codegen(P : Params) = struct
     | Ty_TVar lname ->
         Format.fprintf fmt "`%a "
           cg_lname lname
-    | Ty_Array (lname, size_spec) ->
+    | Ty_Array (type_name, size_spec) ->
         Format.fprintf fmt "%a%a "
-          cg_lname lname
+          cg_type_name type_name
           cg_size_spec size_spec
     | Ty_Auto ->
         Format.fprintf fmt "auto "

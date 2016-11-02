@@ -97,10 +97,10 @@ let visit_type_name v state = function
   | Ty_TVar lname ->
       let state, lname = v.fold_lname v state lname in
       state, Ty_TVar lname
-  | Ty_Array (lname, size_spec) ->
-      let state, lname = v.fold_lname v state lname in
+  | Ty_Array (type_name, size_spec) ->
+      let state, type_name = v.fold_type_name v state type_name in
       let state, size_spec = v.fold_size_spec v state size_spec in
-      state, Ty_Array (lname, size_spec)
+      state, Ty_Array (type_name, size_spec)
   | Ty_Auto ->
       state, Ty_Auto
   | Ty_Const type_name ->

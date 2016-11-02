@@ -13,7 +13,7 @@ Executable apidsl
   Path:           .
   BuildTools:     ocamlbuild
   MainIs:         apigen.ml
-  BuildDepends:   ppx_deriving.std, menhirLib
+  BuildDepends:   ppx_deriving.std, menhirLib, str
   CompiledObject: best
 
 Test regressions

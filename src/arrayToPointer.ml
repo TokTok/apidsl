@@ -4,8 +4,8 @@ open ApiMap
 
 let map_type_name v symtab = function
 
-  | Ty_Array (lname, _) ->
-      Ty_Pointer (Ty_LName lname)
+  | Ty_Array (type_name, _) ->
+      Ty_Pointer type_name
 
   | type_name ->
       visit_type_name v symtab type_name

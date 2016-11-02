@@ -234,7 +234,7 @@ type_name
 	| lname STAR
 		{ Ty_Pointer (Ty_LName $1) }
 	| lname LSQBRACK size_spec RSQBRACK
-		{ Ty_Array ($1, $3) }
+		{ Ty_Array (Ty_LName $1, $3) }
 	| BACKTICK lname
 		{ Ty_TVar $2 }
 	| ANY
