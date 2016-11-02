@@ -1,4 +1,4 @@
-open ApiAst
+open HaskellAst
 
 
 type ('a, 'id1, 'id2) t = {
@@ -90,18 +90,16 @@ let visit_type_name v state = function
   | Ty_TVar lname ->
       let lname = v.map_lname v state lname in
       Ty_TVar lname
+  | Ty_App (uname, args) ->
+      let uname = v.map_uname v state uname in
+      let args = visit_list v.map_type_name v state args in
+      Ty_App (uname, args)
   | Ty_Array (type_name, size_spec) ->
       let type_name = v.map_type_name v state type_name in
       let size_spec = v.map_size_spec v state size_spec in
       Ty_Array (type_name, size_spec)
   | Ty_Auto ->
       Ty_Auto
-  | Ty_Const type_name ->
-      let type_name = v.map_type_name v state type_name in
-      Ty_Const type_name
-  | Ty_Pointer type_name ->
-      let type_name = v.map_type_name v state type_name in
-      Ty_Pointer type_name
 
 
 let visit_enumerator v state = function
@@ -149,10 +147,14 @@ let visit_expr v state = function
 
 
 let visit_decl v state = function
-  | Decl_Comment (comment, decl) ->
+  | Decl_PreComment (comment, decl) ->
       let comment = v.map_comment v state comment in
       let decl = v.map_decl v state decl in
-      Decl_Comment (comment, decl)
+      Decl_PreComment (comment, decl)
+  | Decl_PostComment (decl, comment) ->
+      let decl = v.map_decl v state decl in
+      let comment = v.map_comment v state comment in
+      Decl_PostComment (decl, comment)
   | Decl_Inline decl ->
       let decl = v.map_decl v state decl in
       Decl_Inline decl

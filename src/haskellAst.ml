@@ -37,10 +37,9 @@ type 'id type_name =
   | Ty_UName of 'id uname
   | Ty_LName of 'id lname
   | Ty_TVar of 'id lname
+  | Ty_App of 'id uname * 'id type_name list
   | Ty_Array of 'id type_name * 'id size_spec
   | Ty_Auto
-  | Ty_Const of 'id type_name
-  | Ty_Pointer of 'id type_name
   [@@deriving show]
 
 
@@ -79,7 +78,8 @@ type enum_kind =
 
 type 'id decl =
   | Decl_Class of 'id lname * 'id decl list
-  | Decl_Comment of 'id comment * 'id decl
+  | Decl_PreComment of 'id comment * 'id decl
+  | Decl_PostComment of 'id decl * 'id comment
   | Decl_Const of 'id uname * 'id expr
   | Decl_Enum of enum_kind * 'id uname * 'id enumerator list
   | Decl_Error of 'id lname * 'id enumerator list

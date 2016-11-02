@@ -90,8 +90,8 @@ let visit_type_name v state = function
   | Ty_TVar lname ->
       let state = v.fold_lname v state lname in
       state
-  | Ty_Array (lname, size_spec) ->
-      let state = v.fold_lname v state lname in
+  | Ty_Array (type_name, size_spec) ->
+      let state = v.fold_type_name v state type_name in
       let state = v.fold_size_spec v state size_spec in
       state
   | Ty_Auto ->
