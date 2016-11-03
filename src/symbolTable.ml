@@ -167,7 +167,7 @@ let pp_symbol symtab fmt id =
     (name symtab id |> String.escaped)
 
 
-let rename (table, scope as symtab) id f =
+let rename id f (table, scope as symtab) =
   let name = name symtab id in
 
   let renamed = f name in

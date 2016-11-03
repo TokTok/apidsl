@@ -16,8 +16,8 @@ let resolve_ns symtab ns =
 let fold_enumerator v (symtab, ns) = function
   | Enum_Name (comment, uname, value) ->
       let symtab =
-        SymbolTable.rename symtab uname
-          (prepend_ns (resolve_ns symtab ns))
+        SymbolTable.rename uname
+          (prepend_ns (resolve_ns symtab ns)) symtab
       in
       (symtab, ns)
 

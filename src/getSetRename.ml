@@ -11,28 +11,31 @@ let rec rename_symbols name symtab = function
 
       begin match SymbolTable.name symtab fname with
         | "size" ->
-            SymbolTable.rename symtab fname
+            SymbolTable.rename fname
               (fun _ ->
                  if name = "this" then
                    "get_size"
                  else
                    "get_" ^ name ^ "_size")
+              symtab
 
         | "get" ->
-            SymbolTable.rename symtab fname
+            SymbolTable.rename fname
               (fun _ ->
                  if name = "this" then
                    "get"
                  else
                    "get_" ^ name)
+              symtab
 
         | "set" ->
-            SymbolTable.rename symtab fname
+            SymbolTable.rename fname
               (fun _ ->
                  if name = "this" then
                    "set"
                  else
                    "set_" ^ name)
+              symtab
 
         | _ ->
             failwith (
@@ -44,9 +47,10 @@ let rec rename_symbols name symtab = function
   | Decl_Error (uname, _) ->
       let name = String.uppercase @@ SymbolTable.name symtab name in
 
-      SymbolTable.rename symtab uname
+      SymbolTable.rename uname
         (fun error_name ->
            error_name ^ "_" ^ name)
+        symtab
 
   | decl ->
       failwith @@ show_decl (SymbolTable.pp_symbol symtab) decl

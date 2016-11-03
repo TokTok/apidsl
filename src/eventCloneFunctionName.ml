@@ -8,8 +8,8 @@ let fold_decl v (symtab, in_event) = function
       let symtab, lname = SymbolTable.clone_symbol symtab lname in
 
       let symtab =
-        SymbolTable.rename symtab lname
-          (fun name -> "callback_" ^ name)
+        SymbolTable.rename lname
+          (fun name -> "callback_" ^ name) symtab
       in
 
       (symtab, in_event), Decl_Function (type_name, lname, parameters, error_list)

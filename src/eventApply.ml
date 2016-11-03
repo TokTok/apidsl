@@ -4,8 +4,8 @@ open ApiFold
 
 let fold_decl v (symtab, event) = function
   | Decl_Typedef (_, lname, _) ->
-      SymbolTable.rename symtab lname
-        (fun name -> event ^ "_" ^ name), event
+      SymbolTable.rename lname
+        (fun name -> event ^ "_" ^ name) symtab, event
 
   | Decl_Event (lname, _, decls) ->
       let symtab, _ =
