@@ -47,10 +47,11 @@ let fold_decl v (symtab, ignore_first, ns) = function
   | Decl_Enum (_, uname, _)
   | Decl_Const (uname, _) ->
       let symtab =
-        resolve_ns symtab ns
-        |> List.map (ns_map String.uppercase)
-        |> prepend_ns ~ignore_inline:true
-        |> SymbolTable.rename symtab uname
+        symtab
+        |> (resolve_ns symtab ns
+            |> List.map (ns_map String.uppercase)
+            |> prepend_ns ~ignore_inline:true
+            |> SymbolTable.rename uname)
       in
 
       (symtab, ignore_first, ns)
@@ -64,9 +65,10 @@ let fold_decl v (symtab, ignore_first, ns) = function
   | Decl_Member (_, lname)
   | Decl_Function (_, lname, _, _) ->
       let symtab =
-        resolve_ns symtab ns
-        |> prepend_ns ~ignore_inline:false
-        |> SymbolTable.rename symtab lname
+        symtab
+        |> (resolve_ns symtab ns
+            |> prepend_ns ~ignore_inline:false
+            |> SymbolTable.rename lname)
       in
 
       (symtab, ignore_first, ns)

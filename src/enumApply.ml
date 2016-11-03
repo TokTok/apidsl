@@ -4,8 +4,8 @@ open ApiFold
 
 let fold_enumerator v (symtab, enum) = function
   | Enum_Name (comment, uname, value) ->
-      SymbolTable.rename symtab uname
-        (fun name -> enum ^ "_" ^ name), enum
+      SymbolTable.rename uname
+        (fun name -> enum ^ "_" ^ name) symtab, enum
 
   | enumerator ->
       visit_enumerator v (symtab, enum) enumerator

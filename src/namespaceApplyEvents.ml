@@ -16,13 +16,14 @@ let resolve_ns symtab ns =
 let fold_decl v (symtab, ns) = function
   | Decl_Event (lname, _, _) ->
       let symtab =
-        resolve_ns symtab ns
-        |> (function
-            | [] -> assert false
-            | ns -> ns |> List.rev |> List.tl |> List.rev (* Skip the first namespace. *)
-          )
-        |> prepend_ns
-        |> SymbolTable.rename symtab lname
+        symtab
+        |> (resolve_ns symtab ns
+            |> (function
+                | [] -> assert false
+                | ns -> ns |> List.rev |> List.tl |> List.rev (* Skip the first namespace. *)
+              )
+            |> prepend_ns
+            |> SymbolTable.rename lname)
       in
 
       (symtab, ns)

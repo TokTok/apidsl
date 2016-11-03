@@ -26,8 +26,8 @@ let fold_decl v (symtab, ns) = function
           |> List.map String.capitalize
           |> String.concat "_"
         in
-        SymbolTable.rename symtab this
-          (fun x -> class_name)
+        SymbolTable.rename this
+          (fun _ -> class_name) symtab
       in
 
       (symtab, ns)
