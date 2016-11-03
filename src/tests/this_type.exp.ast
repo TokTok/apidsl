@@ -1,0 +1,21 @@
+(ApiAst.Api (None,
+   [(ApiAst.Decl_Class (tox, [(ApiAst.Decl_Struct (this, [], []))]));
+     (ApiAst.Decl_Class (toxAV,
+        [(ApiAst.Decl_Struct (this, [], []));
+          (ApiAst.Decl_Static
+             (ApiAst.Decl_Function (
+                (ApiAst.Ty_Pointer (ApiAst.Ty_LName this)), new,
+                [(ApiAst.Param ((ApiAst.Ty_Pointer (ApiAst.Ty_LName tox_t)),
+                    tox))
+                  ],
+                ApiAst.Err_None)));
+          (ApiAst.Decl_GetSet ((ApiAst.Ty_Pointer (ApiAst.Ty_LName tox_t)),
+             tox,
+             [(ApiAst.Decl_Function (ApiAst.Ty_Auto, get, [], ApiAst.Err_None
+                 ))
+               ]
+             ))
+          ]
+        ))
+     ],
+   None))

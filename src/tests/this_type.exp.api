@@ -1,0 +1,21 @@
+
+class tox {
+
+  struct this;
+}
+
+
+class toxAV {
+
+  struct this;
+
+  static this *new(tox_t *tox);
+
+  tox_t *tox {
+  
+    get();
+  }
+  
+}
+
+

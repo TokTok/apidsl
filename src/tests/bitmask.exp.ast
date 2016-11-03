@@ -1,0 +1,71 @@
+(ApiAst.Api (None,
+   [(ApiAst.Decl_Namespace (toxav,
+       [(ApiAst.Decl_Comment (
+           (ApiAst.Cmt_Doc
+              [ApiAst.Cmtf_Break;
+                (ApiAst.Cmtf_Doc
+                   " The call state is a set of operations that are currently being performed.");
+                ApiAst.Cmtf_Break;
+                (ApiAst.Cmtf_Doc
+                   " A value of 0 means we are neither sending nor receiving anything, meaning,");
+                ApiAst.Cmtf_Break;
+                (ApiAst.Cmtf_Doc
+                   " one of the sides requested pause. The call will be resumed once the side");
+                ApiAst.Cmtf_Break;
+                (ApiAst.Cmtf_Doc " that initiated pause resumes it.")]),
+           (ApiAst.Decl_Enum (ApiAst.Enum_Bitmask, CALL_STATE,
+              [(ApiAst.Enum_Name (
+                  (ApiAst.Cmt_Doc
+                     [ApiAst.Cmtf_Break;
+                       (ApiAst.Cmtf_Doc
+                          " The friend is sending audio (we are receiving).")
+                       ]),
+                  SENDING_A, None));
+                (ApiAst.Enum_Name (
+                   (ApiAst.Cmt_Doc
+                      [ApiAst.Cmtf_Break;
+                        (ApiAst.Cmtf_Doc
+                           " The friend is sending video (we are receiving).")
+                        ]),
+                   SENDING_V, None));
+                (ApiAst.Enum_Name (
+                   (ApiAst.Cmt_Doc
+                      [ApiAst.Cmtf_Break;
+                        (ApiAst.Cmtf_Doc
+                           " The friend is receiving audio (we are sending).")
+                        ]),
+                   RECEIVING_A, None));
+                (ApiAst.Enum_Name (
+                   (ApiAst.Cmt_Doc
+                      [ApiAst.Cmtf_Break;
+                        (ApiAst.Cmtf_Doc
+                           " The friend is receiving video (we are sending).")
+                        ]),
+                   RECEIVING_V, None));
+                (ApiAst.Enum_Name (
+                   (ApiAst.Cmt_Doc
+                      [ApiAst.Cmtf_Break;
+                        (ApiAst.Cmtf_Doc
+                           " The call has finished. This is the final state after which no more state");
+                        ApiAst.Cmtf_Break;
+                        (ApiAst.Cmtf_Doc
+                           " transitions can occur for the call.")
+                        ]),
+                   END, None));
+                (ApiAst.Enum_Name (
+                   (ApiAst.Cmt_Doc
+                      [ApiAst.Cmtf_Break;
+                        (ApiAst.Cmtf_Doc
+                           " Set by the AV core if an error occurred on the remote end. This call");
+                        ApiAst.Cmtf_Break;
+                        (ApiAst.Cmtf_Doc
+                           " state will never be triggered in combination with other call states.")
+                        ]),
+                   ERROR, None))
+                ]
+              ))
+           ))
+         ]
+       ))
+     ],
+   None))

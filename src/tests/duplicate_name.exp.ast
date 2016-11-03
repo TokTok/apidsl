@@ -1,0 +1,4 @@
+(ApiAst.Api (None,
+   [(ApiAst.Decl_Member ((ApiAst.Ty_LName int32_t), x));
+     (ApiAst.Decl_Member ((ApiAst.Ty_LName int32_t), x))],
+   None))

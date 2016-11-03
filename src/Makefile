@@ -3,11 +3,11 @@ BUILDFLAGS := -yaccflags --table
 
 default: test
 
-tests: $(patsubst %.h,%.out,$(wildcard tests/*.h))
+tests: $(patsubst %.api.h,%.out.h,$(wildcard tests/*.h))
 
-tests/%.out: tests/%.h build
+tests/%.out.h: tests/%.api.h build
 	-./apigen.native $< > $@ 2>&1
-	diff -u $@ tests/$*.exp
+	diff -u $@ tests/$*.exp.h
 	rm -f $@
 
 # We have our own for now, because upstream is broken.

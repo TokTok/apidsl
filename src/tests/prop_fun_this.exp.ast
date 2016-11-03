@@ -1,0 +1,22 @@
+(ApiAst.Api (None,
+   [(ApiAst.Decl_GetSet ((ApiAst.Ty_LName uint8_t), this,
+       [(ApiAst.Decl_Comment (
+           (ApiAst.Cmt_Doc
+              [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " Something.")]),
+           (ApiAst.Decl_Function (ApiAst.Ty_Auto, get, [], ApiAst.Err_None))
+           ));
+         (ApiAst.Decl_Comment (
+            (ApiAst.Cmt_Doc
+               [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " Something.")]),
+            (ApiAst.Decl_Function (ApiAst.Ty_Auto, set, [], ApiAst.Err_None))
+            ));
+         (ApiAst.Decl_Comment (
+            (ApiAst.Cmt_Doc
+               [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " Something.")]),
+            (ApiAst.Decl_Function (ApiAst.Ty_Auto, size, [], ApiAst.Err_None
+               ))
+            ))
+         ]
+       ))
+     ],
+   None))

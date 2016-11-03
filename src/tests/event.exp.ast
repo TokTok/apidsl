@@ -1,0 +1,39 @@
+(ApiAst.Api (None,
+   [(ApiAst.Decl_Class (fooBar,
+       [(ApiAst.Decl_Struct (this, [], []));
+         (ApiAst.Decl_Event (thing, false,
+            [(ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " yoy")]),
+                (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void), cb, []))))
+              ]
+            ));
+         (ApiAst.Decl_Namespace (bleh,
+            [(ApiAst.Decl_Event (thing, false,
+                [(ApiAst.Decl_Comment (
+                    (ApiAst.Cmt_Doc
+                       [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " yoy")]),
+                    (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void), cb, []))))
+                  ]
+                ));
+              (ApiAst.Decl_Event (otherthing, true,
+                 [(ApiAst.Decl_Comment (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " Heyo haha.")]),
+                     (ApiAst.Decl_Typedef ((ApiAst.Ty_TVar a), cb,
+                        [(ApiAst.Param ((ApiAst.Ty_LName uint32_t), fluff))]
+                        ))
+                     ))
+                   ]
+                 ))
+              ]
+            ));
+         (ApiAst.Decl_Function ((ApiAst.Ty_TVar a), iterate,
+            [(ApiAst.Param ((ApiAst.Ty_TVar a), user_data))], ApiAst.Err_None
+            ));
+         (ApiAst.Decl_Function ((ApiAst.Ty_TVar any), iterate2,
+            [(ApiAst.Param ((ApiAst.Ty_TVar any), user_data))],
+            ApiAst.Err_None))
+         ]
+       ))
+     ],
+   None))

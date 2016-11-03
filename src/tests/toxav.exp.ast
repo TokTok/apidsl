@@ -1,0 +1,1275 @@
+(ApiAst.Api (
+   (Some "/* toxav.h\n * \n * Copyright (C) 2013-2015 Tox project All Rights Reserved.\n *\n * This file is part of Tox.\n *\n * Tox is free software: you can redistribute it and/or modify\n * it under the terms of the GNU General Public License as published by\n * the Free Software Foundation, either version 3 of the License, or\n * (at your option) any later version.\n *\n * Tox is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n * GNU General Public License for more details.\n *\n * You should have received a copy of the GNU General Public License\n * along with Tox. If not, see <http://www.gnu.org/licenses/>.\n * \n */\n\n#ifndef TOXAV_H\n#define TOXAV_H\n\n#include <stdbool.h>\n#include <stddef.h>\n#include <stdint.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif"),
+   [(ApiAst.Decl_Comment (
+       (ApiAst.Cmt_Doc
+          [(ApiAst.Cmtf_Doc
+              " \\page av Public audio/video API for Tox clients.");
+            ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " "); ApiAst.Cmtf_Break;
+            (ApiAst.Cmtf_Doc
+               " This API can handle multiple calls. Each call has its state, in very rare");
+            ApiAst.Cmtf_Break;
+            (ApiAst.Cmtf_Doc
+               " occasions the library can change the state of the call without apps knowledge.");
+            ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " ")]),
+       (ApiAst.Decl_Comment (
+          (ApiAst.Cmt_Doc
+             [(ApiAst.Cmtf_Doc " \\subsection events Events and callbacks");
+               ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+               (ApiAst.Cmtf_Doc
+                  " As in Core API, events are handled by callbacks. One callback can be ");
+               ApiAst.Cmtf_Break;
+               (ApiAst.Cmtf_Doc
+                  " registered per event. All events have a callback function type named ");
+               ApiAst.Cmtf_Break;
+               (ApiAst.Cmtf_Doc
+                  " `toxav_{event}_cb` and a function to register it named `tox_callback_{event}`. ");
+               ApiAst.Cmtf_Break;
+               (ApiAst.Cmtf_Doc
+                  " Passing a NULL callback will result in no callback being registered for that ");
+               ApiAst.Cmtf_Break;
+               (ApiAst.Cmtf_Doc
+                  " event. Only one callback per event can be registered, so if a client needs ");
+               ApiAst.Cmtf_Break;
+               (ApiAst.Cmtf_Doc
+                  " multiple event listeners, it needs to implement the dispatch functionality ");
+               ApiAst.Cmtf_Break;
+               (ApiAst.Cmtf_Doc
+                  " itself. Unlike Core API, lack of some event handlers will cause the the ");
+               ApiAst.Cmtf_Break;
+               (ApiAst.Cmtf_Doc
+                  " library to drop calls before they are started. Hanging up call from a ");
+               ApiAst.Cmtf_Break;
+               (ApiAst.Cmtf_Doc " callback causes undefined behaviour.");
+               ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " ")]),
+          (ApiAst.Decl_Comment (
+             (ApiAst.Cmt_Doc
+                [(ApiAst.Cmtf_Doc
+                    " \\subsection threading Threading implications");
+                  ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc
+                     " Unlike the Core API, this API is fully thread-safe. The library will ensure");
+                  ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc
+                     " the proper synchronisation of parallel calls. ");
+                  ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " ");
+                  ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc
+                     " A common way to run ToxAV (multiple or single instance) is to have a thread,");
+                  ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc
+                     " separate from tox instance thread, running a simple ");
+                  (ApiAst.Cmtf_Var
+                     [(ApiAst.Var_LName toxAV); (ApiAst.Var_LName iterate)]);
+                  (ApiAst.Cmtf_Doc " loop, "); ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc " sleeping for ");
+                  (ApiAst.Cmtf_Var
+                     [(ApiAst.Var_LName toxAV);
+                       (ApiAst.Var_LName iteration_interval)]);
+                  (ApiAst.Cmtf_Doc " * milliseconds on each iteration.");
+                  ApiAst.Cmtf_Break]),
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc " External Tox type.")]),
+                (ApiAst.Decl_Class (tox,
+                   [(ApiAst.Decl_Struct (this, [], []))]))
+                ))
+             ))
+          ))
+       ));
+     (ApiAst.Decl_Comment (
+        (ApiAst.Cmt_Doc [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " ToxAV.")]),
+        (ApiAst.Decl_Class (toxAV,
+           [(ApiAst.Decl_Comment (
+               (ApiAst.Cmt_Doc
+                  [ApiAst.Cmtf_Break;
+                    (ApiAst.Cmtf_Doc
+                       " The ToxAV instance type. Each ToxAV instance can be bound to only one Tox");
+                    ApiAst.Cmtf_Break;
+                    (ApiAst.Cmtf_Doc
+                       " instance, and Tox instance can have only one ToxAV instance. One must make");
+                    ApiAst.Cmtf_Break;
+                    (ApiAst.Cmtf_Doc
+                       " sure to close ToxAV instance prior closing Tox instance otherwise undefined");
+                    ApiAst.Cmtf_Break;
+                    (ApiAst.Cmtf_Doc
+                       " behaviour occurs. Upon closing of ToxAV instance, all active calls will be ");
+                    ApiAst.Cmtf_Break;
+                    (ApiAst.Cmtf_Doc
+                       " forcibly terminated without notifying peers.");
+                    ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " ")]),
+               (ApiAst.Decl_Struct (this, [], []))));
+             (ApiAst.Decl_Section
+                [ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc " :: API version"); ApiAst.Cmtf_Break]);
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " The major version number. Incremented when the API or ABI changes in an");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc " incompatible way.")]),
+                (ApiAst.Decl_Macro
+                   (ApiAst.Macro
+                      "#define TOXAV_VERSION_MAJOR               0u"))
+                ));
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " The minor version number. Incremented when functionality is added without");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " breaking the API or ABI. Set to 0 when the major version number is");
+                     ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " incremented.")]),
+                (ApiAst.Decl_Macro
+                   (ApiAst.Macro
+                      "#define TOXAV_VERSION_MINOR               0u"))
+                ));
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " The patch or revision number. Incremented when bugfixes are applied without");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " changing any functionality or API or ABI.")
+                     ]),
+                (ApiAst.Decl_Macro
+                   (ApiAst.Macro
+                      "#define TOXAV_VERSION_PATCH               0u"))
+                ));
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " A macro to check at preprocessing time whether the client code is compatible");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc " with the installed version of ToxAV.")
+                     ]),
+                (ApiAst.Decl_Macro
+                   (ApiAst.Macro
+                      "#define TOXAV_VERSION_IS_API_COMPATIBLE(MAJOR, MINOR, PATCH)        \\\n  (TOXAV_VERSION_MAJOR == MAJOR &&                                \\\n   (TOXAV_VERSION_MINOR > MINOR ||                                \\\n    (TOXAV_VERSION_MINOR == MINOR &&                              \\\n     TOXAV_VERSION_PATCH >= PATCH)))"))
+                ));
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " A macro to make compilation fail if the client code is not compatible with");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc " the installed version of ToxAV.")]),
+                (ApiAst.Decl_Macro
+                   (ApiAst.Macro
+                      "#define TOXAV_VERSION_REQUIRE(MAJOR, MINOR, PATCH)                \\\n  typedef char toxav_required_version[TOXAV_IS_COMPATIBLE(MAJOR, MINOR, PATCH) ? 1 : -1]"))
+                ));
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc " A convenience macro to call ");
+                     (ApiAst.Cmtf_Var
+                        [(ApiAst.Var_LName version);
+                          (ApiAst.Var_LName is_compatible)]);
+                     (ApiAst.Cmtf_Doc " with the currently");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc " compiling API version.")]),
+                (ApiAst.Decl_Macro
+                   (ApiAst.Macro
+                      "#define TOXAV_VERSION_IS_ABI_COMPATIBLE()                         \\\n  toxav_version_is_compatible(TOXAV_VERSION_MAJOR, TOXAV_VERSION_MINOR, TOXAV_VERSION_PATCH)"))
+                ));
+             (ApiAst.Decl_Static
+                (ApiAst.Decl_Namespace (version,
+                   [(ApiAst.Decl_Comment (
+                       (ApiAst.Cmt_Doc
+                          [ApiAst.Cmtf_Break;
+                            (ApiAst.Cmtf_Doc
+                               " Return the major version number of the library. Can be used to display the");
+                            ApiAst.Cmtf_Break;
+                            (ApiAst.Cmtf_Doc
+                               " ToxAV library version or to check whether the client is compatible with the");
+                            ApiAst.Cmtf_Break;
+                            (ApiAst.Cmtf_Doc
+                               " dynamically linked version of ToxAV.")
+                            ]),
+                       (ApiAst.Decl_Function ((ApiAst.Ty_LName uint32_t),
+                          major, [], ApiAst.Err_None))
+                       ));
+                     (ApiAst.Decl_Comment (
+                        (ApiAst.Cmt_Doc
+                           [ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                " Return the minor version number of the library.")
+                             ]),
+                        (ApiAst.Decl_Function ((ApiAst.Ty_LName uint32_t),
+                           minor, [], ApiAst.Err_None))
+                        ));
+                     (ApiAst.Decl_Comment (
+                        (ApiAst.Cmt_Doc
+                           [ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                " Return the patch number of the library.")
+                             ]),
+                        (ApiAst.Decl_Function ((ApiAst.Ty_LName uint32_t),
+                           patch, [], ApiAst.Err_None))
+                        ));
+                     (ApiAst.Decl_Comment (
+                        (ApiAst.Cmt_Doc
+                           [ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                " Return whether the compiled library version is compatible with the passed");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc " version numbers.")]),
+                        (ApiAst.Decl_Function ((ApiAst.Ty_LName bool),
+                           is_compatible,
+                           [(ApiAst.Param ((ApiAst.Ty_LName uint32_t), major
+                               ));
+                             (ApiAst.Param ((ApiAst.Ty_LName uint32_t), minor
+                                ));
+                             (ApiAst.Param ((ApiAst.Ty_LName uint32_t), patch
+                                ))
+                             ],
+                           ApiAst.Err_None))
+                        ))
+                     ]
+                   )));
+             (ApiAst.Decl_Section
+                [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " "); ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc " :: Creation and destruction");
+                  ApiAst.Cmtf_Break]);
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " Start new A/V session. There can only be only one session per Tox instance.")
+                     ]),
+                (ApiAst.Decl_Static
+                   (ApiAst.Decl_Function (
+                      (ApiAst.Ty_Pointer (ApiAst.Ty_LName this)), new,
+                      [(ApiAst.Param (
+                          (ApiAst.Ty_Pointer (ApiAst.Ty_LName tox_t)), tox))
+                        ],
+                      (ApiAst.Err_List
+                         [(ApiAst.Enum_Name (ApiAst.Cmt_None, NULL, None));
+                           (ApiAst.Enum_Name (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Memory allocation failure while trying to allocate structures required for");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc " the A/V session.")]),
+                              MALLOC, None));
+                           (ApiAst.Enum_Name (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Attempted to create a second session for the same Tox instance.")
+                                   ]),
+                              MULTIPLE, None))
+                           ])
+                      )))
+                ));
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " Releases all resources associated with the A/V session.");
+                     ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " If any calls were ongoing, these will be forcibly terminated without");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " notifying peers. After calling this function, no other functions may be");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " called and the av pointer becomes invalid.")
+                     ]),
+                (ApiAst.Decl_Function ((ApiAst.Ty_LName void), kill, 
+                   [], ApiAst.Err_None))
+                ));
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " Returns the Tox instance the A/V object was created for.")
+                     ]),
+                (ApiAst.Decl_GetSet (
+                   (ApiAst.Ty_Pointer (ApiAst.Ty_LName tox_t)), tox,
+                   [(ApiAst.Decl_Function (ApiAst.Ty_Auto, get, [],
+                       ApiAst.Err_None))
+                     ]
+                   ))
+                ));
+             (ApiAst.Decl_Section
+                [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " "); ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc " :: A/V event loop"); ApiAst.Cmtf_Break]);
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " Returns the interval in milliseconds when the next toxav_iterate call should");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " be. If no call is active at the moment, this function returns 200.")
+                     ]),
+                (ApiAst.Decl_Function (
+                   (ApiAst.Ty_Const (ApiAst.Ty_LName uint32_t)),
+                   iteration_interval, [], ApiAst.Err_None))
+                ));
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " Main loop for the session. This function needs to be called in intervals of");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " toxav_iteration_interval() milliseconds. It is best called in the separate ");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc " thread from tox_iterate.")]),
+                (ApiAst.Decl_Function ((ApiAst.Ty_LName void), iterate, 
+                   [], ApiAst.Err_None))
+                ));
+             (ApiAst.Decl_Section
+                [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " "); ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc " :: Call setup"); ApiAst.Cmtf_Break]);
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " Call a friend. This will start ringing the friend.");
+                     ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " It is the client's responsibility to stop ringing after a certain timeout,");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " if such behaviour is desired. If the client does not stop ringing, the");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " library will not stop until the friend is disconnected.");
+                     ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " @param friend_number The friend number of the friend that should be called.");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " @param audio_bit_rate Audio bit rate in Kb/sec. Set this to 0 to disable");
+                     ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " audio sending.");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " @param video_bit_rate Video bit rate in Kb/sec. Set this to 0 to disable");
+                     ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " video sending.")]),
+                (ApiAst.Decl_Function ((ApiAst.Ty_LName bool), call,
+                   [(ApiAst.Param ((ApiAst.Ty_LName uint32_t), friend_number
+                       ));
+                     (ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                        audio_bit_rate));
+                     (ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                        video_bit_rate))
+                     ],
+                   (ApiAst.Err_List
+                      [(ApiAst.Enum_Name (
+                          (ApiAst.Cmt_Doc
+                             [ApiAst.Cmtf_Break;
+                               (ApiAst.Cmtf_Doc
+                                  " A resource allocation error occurred while trying to create the structures");
+                               ApiAst.Cmtf_Break;
+                               (ApiAst.Cmtf_Doc " required for the call.")]),
+                          MALLOC, None));
+                        (ApiAst.Enum_Name (
+                           (ApiAst.Cmt_Doc
+                              [ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " The friend number did not designate a valid friend.")
+                                ]),
+                           FRIEND_NOT_FOUND, None));
+                        (ApiAst.Enum_Name (
+                           (ApiAst.Cmt_Doc
+                              [ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " The friend was valid, but not currently connected.")
+                                ]),
+                           FRIEND_NOT_CONNECTED, None));
+                        (ApiAst.Enum_Name (
+                           (ApiAst.Cmt_Doc
+                              [ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " Attempted to call a friend while already in an audio or video call with");
+                                ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " them.")
+                                ]),
+                           FRIEND_ALREADY_IN_CALL, None));
+                        (ApiAst.Enum_Name (
+                           (ApiAst.Cmt_Doc
+                              [ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " Audio or video bit rate is invalid.")
+                                ]),
+                           INVALID_BIT_RATE, None))
+                        ])
+                   ))
+                ));
+             (ApiAst.Decl_Event (call, false,
+                [(ApiAst.Decl_Comment (
+                    (ApiAst.Cmt_Doc
+                       [ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc " The function type for the ");
+                         (ApiAst.Cmtf_Var
+                            [ApiAst.Var_Event; (ApiAst.Var_LName call)]);
+                         (ApiAst.Cmtf_Doc " callback."); ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc " "); ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param friend_number The friend number from which the call is incoming.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param audio_enabled True if friend is sending audio.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param video_enabled True if friend is sending video.")
+                         ]),
+                    (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void), cb,
+                       [(ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                           friend_number));
+                         (ApiAst.Param ((ApiAst.Ty_LName bool), audio_enabled
+                            ));
+                         (ApiAst.Param ((ApiAst.Ty_LName bool), video_enabled
+                            ))
+                         ]
+                       ))
+                    ))
+                  ]
+                ));
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc " Accept an incoming call.");
+                     ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " If answering fails for any reason, the call will still be pending and it is");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc " possible to try and answer it later.");
+                     ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " @param friend_number The friend number of the friend that is calling.");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " @param audio_bit_rate Audio bit rate in Kb/sec. Set this to 0 to disable");
+                     ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " audio sending.");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " @param video_bit_rate Video bit rate in Kb/sec. Set this to 0 to disable");
+                     ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " video sending.")]),
+                (ApiAst.Decl_Function ((ApiAst.Ty_LName bool), answer,
+                   [(ApiAst.Param ((ApiAst.Ty_LName uint32_t), friend_number
+                       ));
+                     (ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                        audio_bit_rate));
+                     (ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                        video_bit_rate))
+                     ],
+                   (ApiAst.Err_List
+                      [(ApiAst.Enum_Name (
+                          (ApiAst.Cmt_Doc
+                             [ApiAst.Cmtf_Break;
+                               (ApiAst.Cmtf_Doc
+                                  " Failed to initialize codecs for call session. Note that codec initiation");
+                               ApiAst.Cmtf_Break;
+                               (ApiAst.Cmtf_Doc
+                                  " will fail if there is no receive callback registered for either audio or");
+                               ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " video.")
+                               ]),
+                          CODEC_INITIALIZATION, None));
+                        (ApiAst.Enum_Name (
+                           (ApiAst.Cmt_Doc
+                              [ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " The friend number did not designate a valid friend.")
+                                ]),
+                           FRIEND_NOT_FOUND, None));
+                        (ApiAst.Enum_Name (
+                           (ApiAst.Cmt_Doc
+                              [ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " The friend was valid, but they are not currently trying to initiate a call.");
+                                ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " This is also returned if this client is already in a call with the friend.")
+                                ]),
+                           FRIEND_NOT_CALLING, None));
+                        (ApiAst.Enum_Name (
+                           (ApiAst.Cmt_Doc
+                              [ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " Audio or video bit rate is invalid.")
+                                ]),
+                           INVALID_BIT_RATE, None))
+                        ])
+                   ))
+                ));
+             (ApiAst.Decl_Section
+                [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " "); ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc " :: Call state graph"); ApiAst.Cmtf_Break
+                  ]);
+             (ApiAst.Decl_Enum (ApiAst.Enum_Bitmask, CALL_STATE,
+                [(ApiAst.Enum_Name (
+                    (ApiAst.Cmt_Doc
+                       [ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " Set by the AV core if an error occurred on the remote end or if friend ");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " timed out. This is the final state after which no more state");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " transitions can occur for the call. This call state will never be triggered");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " in combination with other call states.")
+                         ]),
+                    ERROR, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " The call has finished. This is the final state after which no more state");
+                          ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " transitions can occur for the call. This call state will never be ");
+                          ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " triggered in combination with other call states.")
+                          ]),
+                     FINISHED, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " The flag that marks that friend is sending audio.")
+                          ]),
+                     SENDING_A, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " The flag that marks that friend is sending video.")
+                          ]),
+                     SENDING_V, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " The flag that marks that friend is receiving audio.")
+                          ]),
+                     RECEIVING_A, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " The flag that marks that friend is receiving video.")
+                          ]),
+                     RECEIVING_V, None))
+                  ]
+                ));
+             (ApiAst.Decl_Event (call_state, false,
+                [(ApiAst.Decl_Comment (
+                    (ApiAst.Cmt_Doc
+                       [ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc " The function type for the ");
+                         (ApiAst.Cmtf_Var
+                            [ApiAst.Var_Event; (ApiAst.Var_LName call_state)]);
+                         (ApiAst.Cmtf_Doc " callback."); ApiAst.Cmtf_Break;
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param friend_number The friend number for which the call state changed.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param state The new call state which is guaranteed to be different than ");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " the previous state. The state is set to 0 when the call is paused.")
+                         ]),
+                    (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void), cb,
+                       [(ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                           friend_number));
+                         (ApiAst.Param ((ApiAst.Ty_LName uint32_t), state))]
+                       ))
+                    ))
+                  ]
+                ));
+             (ApiAst.Decl_Section
+                [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " "); ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc " :: Call control"); ApiAst.Cmtf_Break]);
+             (ApiAst.Decl_Enum (ApiAst.Enum_Class, CALL_CONTROL,
+                [(ApiAst.Enum_Name (
+                    (ApiAst.Cmt_Doc
+                       [ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " Resume a previously paused call. Only valid if the pause was caused by this");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " client, if not, this control is ignored. Not valid before the call is accepted.")
+                         ]),
+                    RESUME, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " Put a call on hold. Not valid before the call is accepted.")
+                          ]),
+                     PAUSE, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " Reject a call if it was not answered, yet. Cancel a call after it was");
+                          ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " answered.")]),
+                     CANCEL, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " Request that the friend stops sending audio. Regardless of the friend's");
+                          ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " compliance, this will cause the ");
+                          (ApiAst.Cmtf_Var
+                             [ApiAst.Var_Event; (ApiAst.Var_LName audio);
+                               (ApiAst.Var_LName receive_frame)]);
+                          (ApiAst.Cmtf_Doc " event to stop being");
+                          ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " triggered on receiving an audio frame from the friend.")
+                          ]),
+                     MUTE_AUDIO, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " Calling this control will notify client to start sending audio again.")
+                          ]),
+                     UNMUTE_AUDIO, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " Request that the friend stops sending video. Regardless of the friend's");
+                          ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " compliance, this will cause the ");
+                          (ApiAst.Cmtf_Var
+                             [ApiAst.Var_Event; (ApiAst.Var_LName video);
+                               (ApiAst.Var_LName receive_frame)]);
+                          (ApiAst.Cmtf_Doc " event to stop being");
+                          ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " triggered on receiving an video frame from the friend.")
+                          ]),
+                     HIDE_VIDEO, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " Calling this control will notify client to start sending video again.")
+                          ]),
+                     SHOW_VIDEO, None))
+                  ]
+                ));
+             (ApiAst.Decl_Comment (
+                (ApiAst.Cmt_Doc
+                   [ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " Sends a call control command to a friend.");
+                     ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " @param friend_number The friend number of the friend this client is in a call");
+                     ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " with.");
+                     ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc
+                        " @param control The control command to send.");
+                     ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                     (ApiAst.Cmtf_Doc " @return true on success.")]),
+                (ApiAst.Decl_Function ((ApiAst.Ty_LName bool), call_control,
+                   [(ApiAst.Param ((ApiAst.Ty_LName uint32_t), friend_number
+                       ));
+                     (ApiAst.Param ((ApiAst.Ty_UName CALL_CONTROL), control))
+                     ],
+                   (ApiAst.Err_List
+                      [(ApiAst.Enum_Name (
+                          (ApiAst.Cmt_Doc
+                             [ApiAst.Cmtf_Break;
+                               (ApiAst.Cmtf_Doc
+                                  " The friend_number passed did not designate a valid friend.")
+                               ]),
+                          FRIEND_NOT_FOUND, None));
+                        (ApiAst.Enum_Name (
+                           (ApiAst.Cmt_Doc
+                              [ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " This client is currently not in a call with the friend. Before the call is");
+                                ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " answered, only CANCEL is a valid control.")
+                                ]),
+                           FRIEND_NOT_IN_CALL, None));
+                        (ApiAst.Enum_Name (
+                           (ApiAst.Cmt_Doc
+                              [ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " Happens if user tried to pause an already paused call or if trying to");
+                                ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " resume a call that is not paused.")
+                                ]),
+                           INVALID_TRANSITION, None))
+                        ])
+                   ))
+                ));
+             (ApiAst.Decl_Section
+                [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " "); ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc " :: Controlling bit rates");
+                  ApiAst.Cmtf_Break]);
+             (ApiAst.Decl_Error (set_bit_rate,
+                [(ApiAst.Enum_Name (
+                    (ApiAst.Cmt_Doc
+                       [ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " The bit rate passed was not one of the supported values.")
+                         ]),
+                    INVALID, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " The friend_number passed did not designate a valid friend.")
+                          ]),
+                     FRIEND_NOT_FOUND, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " This client is currently not in a call with the friend.")
+                          ]),
+                     FRIEND_NOT_IN_CALL, None))
+                  ]
+                ));
+             (ApiAst.Decl_Namespace (audio,
+                [(ApiAst.Decl_Namespace (bit_rate,
+                    [(ApiAst.Decl_Event (status, false,
+                        [(ApiAst.Decl_Comment (
+                            (ApiAst.Cmt_Doc
+                               [ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " The function type for the ");
+                                 (ApiAst.Cmtf_Var
+                                    [ApiAst.Var_Event;
+                                      (ApiAst.Var_LName status)]);
+                                 (ApiAst.Cmtf_Doc " callback.");
+                                 ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " ");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " @param friend_number The friend number of the friend for which to set the");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc " audio bit rate.");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " @param stable Is the stream stable enough to keep the bit rate. ");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " Upon successful, non forceful, bit rate change, this is set to ");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " true and 'bit_rate' is set to new bit rate.");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " The stable is set to false with bit_rate set to the unstable");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " bit rate when either current stream is unstable with said bit rate");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " or the non forceful change failed.");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " @param bit_rate The bit rate in Kb/sec.")
+                                 ]),
+                            (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void), cb,
+                               [(ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                                   friend_number));
+                                 (ApiAst.Param ((ApiAst.Ty_LName bool),
+                                    stable));
+                                 (ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                                    bit_rate))
+                                 ]
+                               ))
+                            ))
+                          ]
+                        ));
+                      (ApiAst.Decl_Comment (
+                         (ApiAst.Cmt_Doc
+                            [ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " Set the audio bit rate to be used in subsequent audio frames. If the passed ");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " bit rate is the same as the current bit rate this function will return true ");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " without calling a callback. If there is an active non forceful setup with the");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " passed audio bit rate and the new set request is forceful, the bit rate is ");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " forcefully set and the previous non forceful request is cancelled. The active");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " non forceful setup will be canceled in favour of new non forceful setup.");
+                              ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " @param friend_number The friend number of the friend for which to set the");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc " audio bit rate.");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " @param audio_bit_rate The new audio bit rate in Kb/sec. Set to 0 to disable");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc " audio sending.");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " @param force True if the bit rate change is forceful.");
+                              ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " ")]),
+                         (ApiAst.Decl_Function ((ApiAst.Ty_LName bool), set,
+                            [(ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                                friend_number));
+                              (ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                                 audio_bit_rate));
+                              (ApiAst.Param ((ApiAst.Ty_LName bool), force))],
+                            (ApiAst.Err_From set_bit_rate)))
+                         ))
+                      ]
+                    ))
+                  ]
+                ));
+             (ApiAst.Decl_Namespace (video,
+                [(ApiAst.Decl_Namespace (bit_rate,
+                    [(ApiAst.Decl_Event (status, false,
+                        [(ApiAst.Decl_Comment (
+                            (ApiAst.Cmt_Doc
+                               [ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " The function type for the ");
+                                 (ApiAst.Cmtf_Var
+                                    [ApiAst.Var_Event;
+                                      (ApiAst.Var_LName status)]);
+                                 (ApiAst.Cmtf_Doc " callback.");
+                                 ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " ");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " @param friend_number The friend number of the friend for which to set the");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc " video bit rate.");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " @param stable Is the stream stable enough to keep the bit rate. ");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " Upon successful, non forceful, bit rate change, this is set to ");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " true and 'bit_rate' is set to new bit rate.");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " The stable is set to false with bit_rate set to the unstable");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " bit rate when either current stream is unstable with said bit rate");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " or the non forceful change failed.");
+                                 ApiAst.Cmtf_Break;
+                                 (ApiAst.Cmtf_Doc
+                                    " @param bit_rate The bit rate in Kb/sec.")
+                                 ]),
+                            (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void), cb,
+                               [(ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                                   friend_number));
+                                 (ApiAst.Param ((ApiAst.Ty_LName bool),
+                                    stable));
+                                 (ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                                    bit_rate))
+                                 ]
+                               ))
+                            ))
+                          ]
+                        ));
+                      (ApiAst.Decl_Comment (
+                         (ApiAst.Cmt_Doc
+                            [ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " Set the video bit rate to be used in subsequent video frames. If the passed ");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " bit rate is the same as the current bit rate this function will return true ");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " without calling a callback. If there is an active non forceful setup with the");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " passed video bit rate and the new set request is forceful, the bit rate is ");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " forcefully set and the previous non forceful request is cancelled. The active");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " non forceful setup will be canceled in favour of new non forceful setup.");
+                              ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " @param friend_number The friend number of the friend for which to set the");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc " video bit rate.");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " @param audio_bit_rate The new video bit rate in Kb/sec. Set to 0 to disable");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc " video sending.");
+                              ApiAst.Cmtf_Break;
+                              (ApiAst.Cmtf_Doc
+                                 " @param force True if the bit rate change is forceful.");
+                              ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " ")]),
+                         (ApiAst.Decl_Function ((ApiAst.Ty_LName bool), set,
+                            [(ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                                friend_number));
+                              (ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                                 audio_bit_rate));
+                              (ApiAst.Param ((ApiAst.Ty_LName bool), force))],
+                            (ApiAst.Err_From set_bit_rate)))
+                         ))
+                      ]
+                    ))
+                  ]
+                ));
+             (ApiAst.Decl_Section
+                [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " "); ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc " :: A/V sending"); ApiAst.Cmtf_Break]);
+             (ApiAst.Decl_Error (send_frame,
+                [(ApiAst.Enum_Name (
+                    (ApiAst.Cmt_Doc
+                       [ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " In case of video, one of Y, U, or V was NULL. In case of audio, the samples");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc " data pointer was NULL.")]),
+                    NULL, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " The friend_number passed did not designate a valid friend.")
+                          ]),
+                     FRIEND_NOT_FOUND, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " This client is currently not in a call with the friend.")
+                          ]),
+                     FRIEND_NOT_IN_CALL, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " One of the frame parameters was invalid. E.g. the resolution may be too");
+                          ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " small or too large, or the audio sampling rate may be unsupported.")
+                          ]),
+                     INVALID, None));
+                  (ApiAst.Enum_Name (
+                     (ApiAst.Cmt_Doc
+                        [ApiAst.Cmtf_Break;
+                          (ApiAst.Cmtf_Doc
+                             " Failed to push frame through rtp interface.")
+                          ]),
+                     RTP_FAILED, None))
+                  ]
+                ));
+             (ApiAst.Decl_Namespace (audio,
+                [(ApiAst.Decl_Comment (
+                    (ApiAst.Cmt_Doc
+                       [ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc " Send an audio frame to a friend.");
+                         ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " The expected format of the PCM data is: [s1c1][s1c2][...][s2c1][s2c2][...]...");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " Meaning: sample 1 for channel 1, sample 1 for channel 2, ...");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " For mono audio, this has no meaning, every sample is subsequent. For stereo,");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " this means the expected format is LRLRLR... with samples for left and right");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc " alternating.");
+                         ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param friend_number The friend number of the friend to which to send an");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc " audio frame.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param pcm An array of audio samples. The size of this array must be");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc " sample_count * channels.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param sample_count Number of samples in this frame. Valid numbers here are");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " ((sample rate) * (audio length) / 1000), where audio length can be");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " 2.5, 5, 10, 20, 40 or 60 millseconds.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param channels Number of audio channels. Supported values are 1 and 2.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param sampling_rate Audio sampling rate used in this frame. Valid sampling");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " rates are 8000, 12000, 16000, 24000, or 48000.")
+                         ]),
+                    (ApiAst.Decl_Function ((ApiAst.Ty_LName bool),
+                       send_frame,
+                       [(ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                           friend_number));
+                         (ApiAst.Param (
+                            (ApiAst.Ty_Const
+                               (ApiAst.Ty_Pointer (ApiAst.Ty_LName int16_t))),
+                            pcm));
+                         (ApiAst.Param ((ApiAst.Ty_LName size_t),
+                            sample_count));
+                         (ApiAst.Param ((ApiAst.Ty_LName uint8_t), channels));
+                         (ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                            sampling_rate))
+                         ],
+                       (ApiAst.Err_From send_frame)))
+                    ))
+                  ]
+                ));
+             (ApiAst.Decl_Namespace (video,
+                [(ApiAst.Decl_Comment (
+                    (ApiAst.Cmt_Doc
+                       [ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc " Send a video frame to a friend.");
+                         ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " Y - plane should be of size: height * width");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " U - plane should be of size: (height/2) * (width/2)");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " V - plane should be of size: (height/2) * (width/2)");
+                         ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param friend_number The friend number of the friend to which to send a video");
+                         ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " frame.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param width Width of the frame in pixels.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param height Height of the frame in pixels.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc
+                            " @param y Y (Luminance) plane data.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc " @param u U (Chroma) plane data.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc " @param v V (Chroma) plane data.");
+                         ApiAst.Cmtf_Break;
+                         (ApiAst.Cmtf_Doc " @param a A (Alpha) plane data.")]),
+                    (ApiAst.Decl_Function ((ApiAst.Ty_LName bool),
+                       send_frame,
+                       [(ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                           friend_number));
+                         (ApiAst.Param ((ApiAst.Ty_LName uint16_t), width));
+                         (ApiAst.Param ((ApiAst.Ty_LName uint16_t), height));
+                         (ApiAst.Param (
+                            (ApiAst.Ty_Const
+                               (ApiAst.Ty_Pointer (ApiAst.Ty_LName uint8_t))),
+                            y));
+                         (ApiAst.Param (
+                            (ApiAst.Ty_Const
+                               (ApiAst.Ty_Pointer (ApiAst.Ty_LName uint8_t))),
+                            u));
+                         (ApiAst.Param (
+                            (ApiAst.Ty_Const
+                               (ApiAst.Ty_Pointer (ApiAst.Ty_LName uint8_t))),
+                            v));
+                         (ApiAst.Param (
+                            (ApiAst.Ty_Const
+                               (ApiAst.Ty_Pointer (ApiAst.Ty_LName uint8_t))),
+                            a))
+                         ],
+                       (ApiAst.Err_From send_frame)))
+                    ))
+                  ]
+                ));
+             (ApiAst.Decl_Section
+                [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " "); ApiAst.Cmtf_Break;
+                  (ApiAst.Cmtf_Doc " :: A/V receiving"); ApiAst.Cmtf_Break]);
+             (ApiAst.Decl_Namespace (audio,
+                [(ApiAst.Decl_Event (receive_frame, false,
+                    [(ApiAst.Decl_Comment (
+                        (ApiAst.Cmt_Doc
+                           [ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc " The function type for the ");
+                             (ApiAst.Cmtf_Var
+                                [ApiAst.Var_Event;
+                                  (ApiAst.Var_LName receive_frame)]);
+                             (ApiAst.Cmtf_Doc " callback.");
+                             ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                " @param friend_number The friend number of the friend who sent an audio frame.");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                " @param pcm An array of audio samples (sample_count * channels elements).");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                " @param sample_count The number of audio samples per channel in the PCM array.");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                " @param channels Number of audio channels.");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                " @param sampling_rate Sampling rate used in this frame.");
+                             ApiAst.Cmtf_Break]),
+                        (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void), cb,
+                           [(ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                               friend_number));
+                             (ApiAst.Param (
+                                (ApiAst.Ty_Const
+                                   (ApiAst.Ty_Pointer
+                                      (ApiAst.Ty_LName int16_t))),
+                                pcm));
+                             (ApiAst.Param ((ApiAst.Ty_LName size_t),
+                                sample_count));
+                             (ApiAst.Param ((ApiAst.Ty_LName uint8_t),
+                                channels));
+                             (ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                                sampling_rate))
+                             ]
+                           ))
+                        ))
+                      ]
+                    ))
+                  ]
+                ));
+             (ApiAst.Decl_Namespace (video,
+                [(ApiAst.Decl_Event (receive_frame, false,
+                    [(ApiAst.Decl_Comment (
+                        (ApiAst.Cmt_Doc
+                           [ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc " The function type for the ");
+                             (ApiAst.Cmtf_Var
+                                [ApiAst.Var_Event;
+                                  (ApiAst.Var_LName receive_frame)]);
+                             (ApiAst.Cmtf_Doc " callback.");
+                             ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                " @param friend_number The friend number of the friend who sent a video frame.");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                " @param width Width of the frame in pixels.");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                " @param height Height of the frame in pixels.");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc " @param y ");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc " @param u ");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc " @param v Plane data.");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                "          The size of plane data is derived from width and height where");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                "          Y = MAX(width, abs(ystride)) * height, ");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                "          U = MAX(width/2, abs(ustride)) * (height/2) and ");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                "          V = MAX(width/2, abs(vstride)) * (height/2).");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                "          A = MAX(width, abs(astride)) * height.");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc " @param ystride");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc " @param ustride");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc " @param vstride");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                " @param astride Strides data. Strides represent padding for each plane");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                "                that may or may not be present. You must handle strides in");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                "                your image processing code. Strides are negative if the ");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                "                image is bottom-up hence why you MUST abs() it when");
+                             ApiAst.Cmtf_Break;
+                             (ApiAst.Cmtf_Doc
+                                "                calculating plane buffer size.")
+                             ]),
+                        (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void), cb,
+                           [(ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                               friend_number));
+                             (ApiAst.Param ((ApiAst.Ty_LName uint16_t), width
+                                ));
+                             (ApiAst.Param ((ApiAst.Ty_LName uint16_t),
+                                height));
+                             (ApiAst.Param (
+                                (ApiAst.Ty_Const
+                                   (ApiAst.Ty_Pointer
+                                      (ApiAst.Ty_LName uint8_t))),
+                                y));
+                             (ApiAst.Param (
+                                (ApiAst.Ty_Const
+                                   (ApiAst.Ty_Pointer
+                                      (ApiAst.Ty_LName uint8_t))),
+                                u));
+                             (ApiAst.Param (
+                                (ApiAst.Ty_Const
+                                   (ApiAst.Ty_Pointer
+                                      (ApiAst.Ty_LName uint8_t))),
+                                v));
+                             (ApiAst.Param (
+                                (ApiAst.Ty_Const
+                                   (ApiAst.Ty_Pointer
+                                      (ApiAst.Ty_LName uint8_t))),
+                                a));
+                             (ApiAst.Param ((ApiAst.Ty_LName int32_t),
+                                ystride));
+                             (ApiAst.Param ((ApiAst.Ty_LName int32_t),
+                                ustride));
+                             (ApiAst.Param ((ApiAst.Ty_LName int32_t),
+                                vstride));
+                             (ApiAst.Param ((ApiAst.Ty_LName int32_t),
+                                astride))
+                             ]
+                           ))
+                        ))
+                      ]
+                    ))
+                  ]
+                ))
+             ]
+           ))
+        ))
+     ],
+   (Some "#endif")))

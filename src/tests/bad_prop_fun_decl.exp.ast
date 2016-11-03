@@ -1,0 +1,13 @@
+(ApiAst.Api (None,
+   [(ApiAst.Decl_GetSet ((ApiAst.Ty_LName uint8_t), stuff,
+       [(ApiAst.Decl_Comment (
+           (ApiAst.Cmt_Doc
+              [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " Something.")]),
+           (ApiAst.Decl_Static
+              (ApiAst.Decl_Function (ApiAst.Ty_Auto, get, [], ApiAst.Err_None
+                 )))
+           ))
+         ]
+       ))
+     ],
+   None))
