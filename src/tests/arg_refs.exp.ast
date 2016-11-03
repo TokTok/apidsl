@@ -1,0 +1,20 @@
+(ApiAst.Api (None,
+   [(ApiAst.Decl_Comment (
+       (ApiAst.Cmt_Doc
+          [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " Heyo."); ApiAst.Cmtf_Break;
+            ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " @param ");
+            (ApiAst.Cmtf_Var
+               [(ApiAst.Var_LName club); (ApiAst.Var_LName thing)]);
+            (ApiAst.Cmtf_Doc " Blerp blap."); ApiAst.Cmtf_Break;
+            (ApiAst.Cmtf_Doc " @param ");
+            (ApiAst.Cmtf_Var
+               [(ApiAst.Var_LName club); (ApiAst.Var_LName barf)]);
+            (ApiAst.Cmtf_Doc " Oh noes!")]),
+       (ApiAst.Decl_Static
+          (ApiAst.Decl_Function ((ApiAst.Ty_LName int32_t), club,
+             [(ApiAst.Param ((ApiAst.Ty_LName uint8_t), thing));
+               (ApiAst.Param ((ApiAst.Ty_LName string), barf))],
+             ApiAst.Err_None)))
+       ))
+     ],
+   None))
