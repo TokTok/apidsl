@@ -51,7 +51,7 @@ let all pre api post =
 
   Option.may (Format.pp_print_string Format.str_formatter) pre;
   Format.fprintf Format.str_formatter "%a\n"
-    ApiCodegen.cg_decls api;
+    ApiCodegen.C.cg_decls api;
   Option.may (Format.fprintf Format.str_formatter "\n%s\n") post;
 
   Format.flush_str_formatter ()
