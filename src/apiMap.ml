@@ -21,6 +21,10 @@ type ('a, 'id1, 'id2) t = {
 let visit_list f v state l =
   List.map (f v state) l
 
+let visit_option f v state = function
+  | None -> None
+  | Some x -> Some (f v state x)
+
 
 let visit_uname v state = function
   | name -> name
@@ -55,6 +59,9 @@ let visit_comment_fragment v state = function
   | Cmtf_Var var ->
       let var = visit_list v.map_var v state var in
       Cmtf_Var var
+  | Cmtf_Doxygen (kind, lname) ->
+      let lname = visit_option v.map_lname v state lname in
+      Cmtf_Doxygen (kind, lname)
   | Cmtf_Break ->
       Cmtf_Break
 

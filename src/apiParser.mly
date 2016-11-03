@@ -33,6 +33,7 @@ open ApiAst
 %token PLUS EQ LE
 %token COMMA SEMICOLON
 
+%token<string * string option> DOXYGEN
 %token<int> NUMBER
 %token<string> LNAME UNAME
 
@@ -275,6 +276,8 @@ comment
 		{ Cmtf_Var [Var_LName $1] }
 	| uname
 		{ Cmtf_Var [Var_UName $1] }
+	| DOXYGEN
+		{ Cmtf_Doxygen (fst $1, snd $1) }
 	| VAR_START var VAR_END
 		{ Cmtf_Var (List.rev $2) }
 	| VAR_START EVENT var VAR_END

@@ -21,6 +21,10 @@ type ('a, 'id) t = {
 let visit_list f v state l =
   List.fold_left (f v) state l
 
+let visit_option f v state = function
+  | None -> state
+  | Some x -> f v state x
+
 
 let visit_uname v state = function
   | name -> state
@@ -54,6 +58,9 @@ let visit_comment_fragment v state = function
       state
   | Cmtf_Var var ->
       let state = visit_list v.fold_var v state var in
+      state
+  | Cmtf_Doxygen (kind, lname) ->
+      let state = visit_option v.fold_lname v state lname in
       state
   | Cmtf_Break ->
       state
