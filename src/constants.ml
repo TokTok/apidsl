@@ -12,7 +12,7 @@ let map_decl v symtab = function
         Macro (
           Format.asprintf "#define %-30s %a"
             (SymbolTable.name symtab name)
-            ApiCodegen.cg_expr expr
+            ApiCodegen.C.cg_expr expr
         )
       in
       Decl_Macro macro
