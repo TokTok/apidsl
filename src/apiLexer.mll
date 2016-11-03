@@ -93,11 +93,13 @@ and verbatim state text =
 
 and comment state =
   parse
+| "@param " (lname as s)                { DOXYGEN ("param", Some s) }
+| "@" (lname as s)                      { DOXYGEN (s, None) }
 | "$" (lname as s)                      { LNAME s }
 | "$" (uname as s)                      { UNAME s }
 | "${"                                  { state.state <- LexVariable; VAR_START }
 
-| [^'$''\n']+ as c                      { COMMENT c }
+| [^'@''$''\n']+ as c                   { COMMENT c }
 | '\n' ' '+ '*'                         { Lexing.new_line lexbuf; COMMENT_BREAK }
 | '\n' ' '+ '*'+ '/'                    { Lexing.new_line lexbuf; state.state <- LexNormal; COMMENT_END }
 | _ as c                                { raise (Lexing_error (lexeme_start_p lexbuf, Char.escaped c)) }
@@ -166,6 +168,8 @@ and variable state =
     | VAR_START -> "VAR_START"
     | VAR_END -> "VAR_END"
 
+    | DOXYGEN (k, None) -> "DOXYGEN (" ^ k ^ ", None)"
+    | DOXYGEN (k, Some s) -> "DOXYGEN (" ^ k ^ ", Some " ^ s ^ ")"
     | NUMBER s -> "NUMBER " ^ string_of_int s
     | LNAME s -> "LNAME " ^ s
     | UNAME s -> "UNAME " ^ s
