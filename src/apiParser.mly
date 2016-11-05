@@ -61,16 +61,17 @@ declaration_list
 
 declaration
 	: class_decl		{ $1 }
-	| macro_decl		{ $1 }
-	| event_decl		{ $1 }
-	| get_set_decl		{ $1 }
-	| member_decl		{ $1 }
-	| struct_decl		{ $1 }
-	| error_decl		{ $1 }
-	| enum_decl		{ $1 }
 	| const_decl		{ $1 }
+	| enum_decl		{ $1 }
+	| error_decl		{ $1 }
+	| event_decl		{ $1 }
 	| function_decl		{ $1 }
+	| get_set_decl		{ $1 }
+	| macro_decl		{ $1 }
+	| member_decl		{ $1 }
 	| namespace_decl	{ $1 }
+	| struct_decl		{ $1 }
+	| typedef_decl		{ $1 }
 	| comment_section	{ $1 }
 	| comment_block declaration
 		{ Decl_Comment ($1, $2) }
@@ -85,12 +86,17 @@ macro_decl
 		{ Decl_Macro (Macro $1) }
 
 
+typedef_decl
+	: comment_block TYPEDEF type_name lname parameter_list SEMICOLON
+		{ Decl_Comment ($1, Decl_Typedef ($3, $4, $5)) }
+
+
 event_decl
-	: EVENT lname CONST? LBRACE typedef_decl RBRACE
+	: EVENT lname CONST? LBRACE event_typedef_decl RBRACE
 		{ Decl_Event ($2, $3 <> None, [$5]) }
 
 
-typedef_decl
+event_typedef_decl
 	: comment_block TYPEDEF type_name parameter_list SEMICOLON
 		{ Decl_Comment ($1, Decl_Typedef ($3, "cb", $4)) }
 
@@ -207,17 +213,17 @@ namespace_decl
 
 
 attributes_opt
-  : /* empty */
-    { [] }
-  | LSQBRACK lname_list RSQBRACK
-    { List.sort String.compare $2 }
+	: /* empty */
+		{ [] }
+	| LSQBRACK lname_list RSQBRACK
+		{ List.sort String.compare $2 }
 
 
 lname_list
-  : lname
-    { [$1] }
-  | lname_list COMMA lname
-    { $3 :: $1 }
+	: lname
+		{ [$1] }
+	| lname_list COMMA lname
+		{ $3 :: $1 }
 
 
 type_name
