@@ -15,6 +15,8 @@ let all pre api post =
     |> pass "LengthParams" LengthParams.transform
     |> pass "ThisParams" ThisParams.transform
     |> pass "ErrorSplitFromFunction" ErrorSplitFromFunction.transform
+    |> pass "EnumBitmasks" EnumBitmasks.transform
+    |> pass "EnumBitmaskNONE" EnumBitmaskNONE.transform
     |> pass "ExtractSymbols" (fun api -> ExtractSymbols.extract api, api)
     |> pass "ScopeBinding" ScopeBinding.transform
     |> pass "EventRename" EventRename.transform
@@ -46,7 +48,6 @@ let all pre api post =
     |> pass "Constants" Constants.transform
     |> pass "ScopeBinding" ScopeBinding.Inverse.transform
     |> pass "StringToCharP" StringToCharP.transform
-    |> pass "EnumBitmasks" EnumBitmasks.transform
   in
 
   Option.may (Format.pp_print_string Format.str_formatter) pre;

@@ -17,7 +17,7 @@ let add_bit_values enumerators =
 let map_decl v state = function
   | Decl_Enum (Enum_Bitmask, lname, enumerators) ->
       let enumerators = add_bit_values enumerators in
-      Decl_Enum (Enum_Normal, lname, enumerators)
+      Decl_Enum (Enum_Bitmask, lname, enumerators)
 
   | decl ->
       visit_decl v state decl

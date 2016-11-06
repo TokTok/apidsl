@@ -8,6 +8,11 @@
 enum TOXAV_CALL_STATE {
 
   /**
+   * The empty bit mask. None of the bits specified below are set.
+   */
+  TOXAV_CALL_STATE_NONE = 0,
+  
+  /**
    * The friend is sending audio (we are receiving).
    */
   TOXAV_CALL_STATE_SENDING_A = 1,
