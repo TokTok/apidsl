@@ -1,0 +1,12 @@
+(ApiAst.Api (None,
+   [(ApiAst.Decl_Class (foo,
+       [(ApiAst.Decl_Struct (this, [], []));
+         (ApiAst.Decl_Comment (
+            (ApiAst.Cmt_Doc [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " Haha.")]),
+            (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void), moo,
+               [(ApiAst.Param ((ApiAst.Ty_LName int32_t), cow))]))
+            ))
+         ]
+       ))
+     ],
+   None))
