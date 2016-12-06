@@ -44,7 +44,7 @@ let fold_decls v state decls =
          | Prepend prepend ->
              (Keep, user_state), decl :: List.rev prepend @ decls
          | Append append ->
-             (Keep, user_state), decls @ List.rev append @ [decl]
+             (Keep, user_state), List.rev append @ [decl] @ decls
       ) (state, []) decls
   in
   assert (fst state = Keep);
