@@ -6,7 +6,7 @@ tests:	\
 	./apigen.native
 
 src/tests/%.out.h: src/tests/%.api.h apigen.native
-	-cd src && ../apigen.native -c $(patsubst src/%,%,$<) > $(patsubst src/%,%,$@) 2>&1
+	-cd src && ../apigen.native $(patsubst src/%,%,$<) > $(patsubst src/%,%,$@) 2>&1
 	diff -u src/tests/$*.exp.h $@
 	rm -f $@
 
