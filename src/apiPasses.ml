@@ -12,6 +12,11 @@ let pass msg f x =
   f x
 
 
+let display x =
+  print_endline (ApiAst.show_decls Format.pp_print_string x);
+  x
+
+
 let all pre api post =
   let api =
     api

@@ -94,8 +94,8 @@ import           Foreign.Ptr               (FunPtr, Ptr)
 -- E.g. to get the current nickname, one would write
 --
 -- \code
--- ${CSize} length = ${tox_self_get_name_size}(tox);
--- ${Word8} *name = malloc(length);
+-- size_t length = ${tox_self_get_name_size}(tox);
+-- uint8_t *name = malloc(length);
 -- if (!name) abort();
 -- ${tox_self_get_name}(tox, name);
 -- \endcode
@@ -138,7 +138,7 @@ import           Foreign.Ptr               (FunPtr, Ptr)
 -- | 
 -- The patch or revision number. Incremented when bugfixes are applied without
 -- changing any functionality or API or ABI.
---const TOX_VERSION_PATCH = 2
+--const TOX_VERSION_PATCH = 5
 
 --foreign import ccall tox_version_patch :: {- result :: -} Word32
 -- | 
@@ -278,6 +278,203 @@ data TOX_MESSAGE_TYPE
     -- on IRC.
   deriving (Eq, Ord, Enum, Bounded, Read, Show)
 
+data TOX_ERR_ALLOC 
+
+  = TOX_ERR_ALLOC_OK
+    -- ^ 
+    -- The function returned successfully.
+  
+  | TOX_ERR_ALLOC_MALLOC
+    -- ^ 
+    -- The function failed to allocate enough memory for the data structure.
+  deriving (Eq, Ord, Enum, Bounded, Read, Show)
+
+
+--------------------------------------------------------------------------------
+--
+-- :: Loading/saving of internal state
+--
+--------------------------------------------------------------------------------
+
+
+-- | 
+-- Calculates the number of bytes required to store the tox instance with
+-- ${tox_get_savedata}. This function cannot fail. The result is always greater than 0.
+--
+-- @see threading for concurrency implications.
+--foreign import ccall tox_get_savedata_size :: {- tox :: -} Ptr Tox -> {- result :: -} CSize
+-- | 
+-- Store all information associated with the tox instance to a byte array.
+--
+-- @param savedata A memory region large enough to store the tox instance
+--   data. Call ${tox_get_savedata_size} to find the number of bytes required. If this parameter
+--   is NULL, this function has no effect.
+--foreign import ccall tox_get_savedata :: {- tox :: -} Ptr Tox -> {- savedata :: -} Ptr (Word8{-[tox_get_savedata_size]-}) -> {- result :: -} ()
+-- | 
+-- This struct contains callbacks for the save function. You will probably
+-- want to implement all callbacks to produce a useful result.
+data ToxSaver = ToxSaver
+  
+  { u08 :: Ptr tox_saver_u08_cb, u16 :: Ptr tox_saver_u16_cb, u32 :: Ptr tox_saver_u32_cb, u64 :: Ptr tox_saver_u64_cb, arr :: Ptr tox_saver_arr_cb, map :: Ptr tox_saver_map_cb, bin :: Ptr tox_saver_bin_cb}
+
+--foreign import ccall tox_saver_get_u08 :: {- saver :: -} Ptr ToxSaver -> {- result :: -} Ptr tox_saver_u08_cb
+
+--foreign import ccall tox_saver_set_u08 :: {- saver :: -} Ptr ToxSaver -> {- u08 :: -} Ptr tox_saver_u08_cb -> {- result :: -} ()
+
+--foreign import ccall tox_saver_get_u16 :: {- saver :: -} Ptr ToxSaver -> {- result :: -} Ptr tox_saver_u16_cb
+
+--foreign import ccall tox_saver_set_u16 :: {- saver :: -} Ptr ToxSaver -> {- u16 :: -} Ptr tox_saver_u16_cb -> {- result :: -} ()
+
+--foreign import ccall tox_saver_get_u32 :: {- saver :: -} Ptr ToxSaver -> {- result :: -} Ptr tox_saver_u32_cb
+
+--foreign import ccall tox_saver_set_u32 :: {- saver :: -} Ptr ToxSaver -> {- u32 :: -} Ptr tox_saver_u32_cb -> {- result :: -} ()
+
+--foreign import ccall tox_saver_get_u64 :: {- saver :: -} Ptr ToxSaver -> {- result :: -} Ptr tox_saver_u64_cb
+
+--foreign import ccall tox_saver_set_u64 :: {- saver :: -} Ptr ToxSaver -> {- u64 :: -} Ptr tox_saver_u64_cb -> {- result :: -} ()
+
+--foreign import ccall tox_saver_get_arr :: {- saver :: -} Ptr ToxSaver -> {- result :: -} Ptr tox_saver_arr_cb
+
+--foreign import ccall tox_saver_set_arr :: {- saver :: -} Ptr ToxSaver -> {- arr :: -} Ptr tox_saver_arr_cb -> {- result :: -} ()
+
+--foreign import ccall tox_saver_get_map :: {- saver :: -} Ptr ToxSaver -> {- result :: -} Ptr tox_saver_map_cb
+
+--foreign import ccall tox_saver_set_map :: {- saver :: -} Ptr ToxSaver -> {- map :: -} Ptr tox_saver_map_cb -> {- result :: -} ()
+
+--foreign import ccall tox_saver_get_bin :: {- saver :: -} Ptr ToxSaver -> {- result :: -} Ptr tox_saver_bin_cb
+
+--foreign import ccall tox_saver_set_bin :: {- saver :: -} Ptr ToxSaver -> {- bin :: -} Ptr tox_saver_bin_cb -> {- result :: -} ()
+-- | 
+-- Write an 8 bit unsigned integer.
+--typedef tox_saver_u08_cb = {- saver :: -} Ptr ToxSaver -> {- value :: -} Word8 -> {- user_data :: -} <unresolved> -> ()
+
+-- | 
+-- Write a 16 bit unsigned integer.
+--typedef tox_saver_u16_cb = {- saver :: -} Ptr ToxSaver -> {- value :: -} Word16 -> {- user_data :: -} <unresolved> -> ()
+
+-- | 
+-- Write a 32 bit unsigned integer.
+--typedef tox_saver_u32_cb = {- saver :: -} Ptr ToxSaver -> {- value :: -} Word32 -> {- user_data :: -} <unresolved> -> ()
+
+-- | 
+-- Write a 64 bit unsigned integer.
+--typedef tox_saver_u64_cb = {- saver :: -} Ptr ToxSaver -> {- value :: -} Word64 -> {- user_data :: -} <unresolved> -> ()
+
+-- | 
+-- Write an array of the given length. This call is followed by exactly
+-- `elements` calls to other functions. Arrays may be nested, so each
+-- element of the array may be another call to ${tox_saver_arr_cb} with its own element
+-- count and subsequent calls.
+--typedef tox_saver_arr_cb = {- saver :: -} Ptr ToxSaver -> {- elements :: -} CSize -> {- user_data :: -} <unresolved> -> ()
+
+-- | 
+-- Write a list of key/value pairs. A call to this function is followed by
+-- `elements * 2` calls to other functions. Every other call is either key
+-- or value. Keys can be assumed to be unique.
+--typedef tox_saver_map_cb = {- saver :: -} Ptr ToxSaver -> {- elements :: -} CSize -> {- user_data :: -} <unresolved> -> ()
+
+-- | 
+-- Write a byte array of a given length.
+--typedef tox_saver_bin_cb = {- saver :: -} Ptr ToxSaver -> {- data :: -} Ptr (Word8{-[length]-}) -> {- length :: -} CSize -> {- user_data :: -} <unresolved> -> ()
+
+-- | 
+-- Allocates a new ${ToxSaver} object and initialises it with the default
+-- handlers.
+--
+-- Objects returned from this function must be freed using the ${tox_saver_free}
+-- function.
+--
+-- @return A new ${ToxSaver} object with default options or NULL on failure.
+--foreign import ccall tox_saver_new :: {- error :: -} Ptr TOX_ERR_ALLOC -> {- result :: -} Ptr ToxSaver
+-- | 
+-- Releases all resources associated with a saver objects.
+--
+-- Passing a pointer that was not returned by ${tox_saver_new} results in
+-- undefined behaviour.
+--foreign import ccall tox_saver_free :: {- saver :: -} Ptr ToxSaver -> {- result :: -} ()
+
+--foreign import ccall tox_save :: {- tox :: -} Ptr Tox -> {- saver :: -} Ptr ToxSaver -> {- user_data :: -} <unresolved> -> {- result :: -} ()
+-- | 
+-- This struct contains callbacks for the load function. You will probably
+-- want to implement all callbacks to produce a useful result.
+data ToxLoader = ToxLoader
+  
+  { u08 :: Ptr tox_loader_u08_cb, u16 :: Ptr tox_loader_u16_cb, u32 :: Ptr tox_loader_u32_cb, u64 :: Ptr tox_loader_u64_cb, arr :: Ptr tox_loader_arr_cb, map :: Ptr tox_loader_map_cb, bin :: Ptr tox_loader_bin_cb}
+
+--foreign import ccall tox_loader_get_u08 :: {- loader :: -} Ptr ToxLoader -> {- result :: -} Ptr tox_loader_u08_cb
+
+--foreign import ccall tox_loader_set_u08 :: {- loader :: -} Ptr ToxLoader -> {- u08 :: -} Ptr tox_loader_u08_cb -> {- result :: -} ()
+
+--foreign import ccall tox_loader_get_u16 :: {- loader :: -} Ptr ToxLoader -> {- result :: -} Ptr tox_loader_u16_cb
+
+--foreign import ccall tox_loader_set_u16 :: {- loader :: -} Ptr ToxLoader -> {- u16 :: -} Ptr tox_loader_u16_cb -> {- result :: -} ()
+
+--foreign import ccall tox_loader_get_u32 :: {- loader :: -} Ptr ToxLoader -> {- result :: -} Ptr tox_loader_u32_cb
+
+--foreign import ccall tox_loader_set_u32 :: {- loader :: -} Ptr ToxLoader -> {- u32 :: -} Ptr tox_loader_u32_cb -> {- result :: -} ()
+
+--foreign import ccall tox_loader_get_u64 :: {- loader :: -} Ptr ToxLoader -> {- result :: -} Ptr tox_loader_u64_cb
+
+--foreign import ccall tox_loader_set_u64 :: {- loader :: -} Ptr ToxLoader -> {- u64 :: -} Ptr tox_loader_u64_cb -> {- result :: -} ()
+
+--foreign import ccall tox_loader_get_arr :: {- loader :: -} Ptr ToxLoader -> {- result :: -} Ptr tox_loader_arr_cb
+
+--foreign import ccall tox_loader_set_arr :: {- loader :: -} Ptr ToxLoader -> {- arr :: -} Ptr tox_loader_arr_cb -> {- result :: -} ()
+
+--foreign import ccall tox_loader_get_map :: {- loader :: -} Ptr ToxLoader -> {- result :: -} Ptr tox_loader_map_cb
+
+--foreign import ccall tox_loader_set_map :: {- loader :: -} Ptr ToxLoader -> {- map :: -} Ptr tox_loader_map_cb -> {- result :: -} ()
+
+--foreign import ccall tox_loader_get_bin :: {- loader :: -} Ptr ToxLoader -> {- result :: -} Ptr tox_loader_bin_cb
+
+--foreign import ccall tox_loader_set_bin :: {- loader :: -} Ptr ToxLoader -> {- bin :: -} Ptr tox_loader_bin_cb -> {- result :: -} ()
+-- | 
+-- Read an 8 bit unsigned integer.
+--typedef tox_loader_u08_cb = {- loader :: -} Ptr ToxLoader -> {- user_data :: -} <unresolved> -> Word8
+
+-- | 
+-- Read a 16 bit unsigned integer.
+--typedef tox_loader_u16_cb = {- loader :: -} Ptr ToxLoader -> {- user_data :: -} <unresolved> -> Word16
+
+-- | 
+-- Read a 32 bit unsigned integer.
+--typedef tox_loader_u32_cb = {- loader :: -} Ptr ToxLoader -> {- user_data :: -} <unresolved> -> Word32
+
+-- | 
+-- Read a 64 bit unsigned integer.
+--typedef tox_loader_u64_cb = {- loader :: -} Ptr ToxLoader -> {- user_data :: -} <unresolved> -> Word64
+
+-- | 
+-- Read the an array length. This call is followed by exactly the returned
+-- number calls to other functions.
+--typedef tox_loader_arr_cb = {- loader :: -} Ptr ToxLoader -> {- user_data :: -} <unresolved> -> CSize
+
+-- | 
+-- Read the length of the list of key/value pairs. A call to this function
+-- is followed by twice the returned number of calls to other functions.
+-- Every other call is either key or value.
+--typedef tox_loader_map_cb = {- loader :: -} Ptr ToxLoader -> {- user_data :: -} <unresolved> -> CSize
+
+-- | 
+-- Read a byte array of a given length.
+--typedef tox_loader_bin_cb = {- loader :: -} Ptr ToxLoader -> {- data :: -} Ptr (Word8{-[length]-}) -> {- length :: -} CSize -> {- user_data :: -} <unresolved> -> ()
+
+-- | 
+-- Allocates a new ${ToxLoader} object and initialises it with the default
+-- handlers.
+--
+-- Objects returned from this function must be freed using the ${tox_loader_free}
+-- function.
+--
+-- @return A new ${ToxLoader} object with default options or NULL on failure.
+--foreign import ccall tox_loader_new :: {- error :: -} Ptr TOX_ERR_ALLOC -> {- result :: -} Ptr ToxLoader
+-- | 
+-- Releases all resources associated with a loader objects.
+--
+-- Passing a pointer that was not returned by ${tox_loader_new} results in
+-- undefined behaviour.
+--foreign import ccall tox_loader_free :: {- loader :: -} Ptr ToxLoader -> {- result :: -} ()
+
 
 --------------------------------------------------------------------------------
 --
@@ -319,6 +516,48 @@ data TOX_SAVEDATA_TYPE
     -- Savedata is a secret key of length ${TOX_SECRET_KEY_SIZE}.
   deriving (Eq, Ord, Enum, Bounded, Read, Show)
 -- | 
+-- Severity level of log messages.
+data TOX_LOG_LEVEL 
+
+  = TOX_LOG_LEVEL_TRACE
+    -- ^ 
+    -- Very detailed traces including all network activity.
+  
+  | TOX_LOG_LEVEL_DEBUG
+    -- ^ 
+    -- Debug messages such as which port we bind to.
+  
+  | TOX_LOG_LEVEL_INFO
+    -- ^ 
+    -- Informational log messages such as video call status changes.
+  
+  | TOX_LOG_LEVEL_WARNING
+    -- ^ 
+    -- Warnings about internal inconsistency or logic errors.
+  
+  | TOX_LOG_LEVEL_ERROR
+    -- ^ 
+    -- Severe unexpected errors caused by external or internal inconsistency.
+  deriving (Eq, Ord, Enum, Bounded, Read, Show)
+-- | 
+-- This event is triggered when the toxcore library logs an internal message.
+-- This is mostly useful for debugging. This callback can be called from any
+-- function, not just ${tox_iterate}. This means the user data lifetime must at
+-- least extend between registering and unregistering it or ${tox_kill}.
+--
+-- Other toxcore modules such as toxav may concurrently call this callback at
+-- any time. Thus, user code must make sure it is equipped to handle concurrent
+-- execution, e.g. by employing appropriate mutex locking.
+--
+-- @param level The severity of the log message.
+-- @param file The source file from which the message originated.
+-- @param line The source line from which the message originated.
+-- @param func The function from which the message originated.
+-- @param message The log message.
+-- @param user_data The user data pointer passed to ${tox_new} in options.
+--typedef tox_log_cb = {- tox :: -} Ptr Tox -> {- level :: -} TOX_LOG_LEVEL -> {- file :: -} CString -> {- line :: -} Word32 -> {- func :: -} CString -> {- message :: -} CString -> {- user_data :: -} <unresolved> -> ()
+
+-- | 
 -- This struct contains all the startup options for Tox. You can either
 -- allocate this object yourself, and pass it to ${tox_options_default}, or call ${tox_options_new} to get
 -- a new default options object.
@@ -328,9 +567,10 @@ data TOX_SAVEDATA_TYPE
 -- in future versions of the API, code that allocates it itself will become
 -- incompatible.
 --
--- The memory layout of this struct (size, alignment, and field order) is not
--- part of the ABI. To remain compatible, prefer to use ${tox_options_new} to allocate the
--- object and accessor functions to set the members.
+-- @deprecated The memory layout of this struct (size, alignment, and field
+-- order) is not part of the ABI. To remain compatible, prefer to use ${tox_options_new} to
+-- allocate the object and accessor functions to set the members. The struct
+-- will become opaque (i.e. the definition will become private) in v0.1.0.
 data ToxOptions = ToxOptions
   
   { ipv6Enabled :: Bool
@@ -359,7 +599,7 @@ data ToxOptions = ToxOptions
     -- exceed 255 characters, and be in a NUL-terminated C string format
     -- (255 chars + 1 NUL byte).
     --
-    -- This member is ignored (it can be NULL) if ${proxyType} is ${TOX_PROXY_TYPE_NONE}.
+    -- This member is ignored (it can be NULL) if proxy_type is ${TOX_PROXY_TYPE_NONE}.
     --
     -- The data pointed at by this member is owned by the user, so must
     -- outlive the options object.
@@ -368,19 +608,19 @@ data ToxOptions = ToxOptions
     -- The port to use to connect to the proxy server.
     --
     -- Ports must be in the range (1, 65535). The value is ignored if
-    -- ${proxyType} is ${TOX_PROXY_TYPE_NONE}.
+    -- proxy_type is ${TOX_PROXY_TYPE_NONE}.
   , startPort :: Word16
     -- ^ 
     -- The start port of the inclusive port range to attempt to use.
     --
-    -- If both ${startPort} and ${endPort} are 0, the default port range will be
+    -- If both start_port and end_port are 0, the default port range will be
     -- used: [33445, 33545].
     --
-    -- If either ${startPort} or ${endPort} is 0 while the other is non-zero, the
+    -- If either start_port or end_port is 0 while the other is non-zero, the
     -- non-zero port will be the only port in the range.
     --
-    -- Having ${startPort} > ${endPort} will yield the same behavior as if ${startPort}
-    -- and ${endPort} were swapped.
+    -- Having start_port > end_port will yield the same behavior as if start_port
+    -- and end_port were swapped.
   , endPort :: Word16
     -- ^ 
     -- The end port of the inclusive port range to attempt to use.
@@ -395,6 +635,9 @@ data ToxOptions = ToxOptions
     -- instance. This leads to increased traffic, thus when writing a client
     -- it is recommended to enable TCP server only if the user has an option
     -- to disable it.
+  , holePunchingEnabled :: Bool
+    -- ^ 
+    -- Enables or disables UDP hole-punching in toxcore. (Default: enabled).
   , savedataType :: TOX_SAVEDATA_TYPE
     -- ^ 
     -- The type of savedata to load from.
@@ -406,7 +649,19 @@ data ToxOptions = ToxOptions
     -- outlive the options object.
   , savedataLength :: CSize
     -- ^ 
-    -- The length of the ${savedataData} array.
+    -- The length of the savedata.
+  , logCallback :: Ptr tox_log_cb
+    -- ^ 
+    -- Logging callback for the new tox instance.
+  , logUserData :: <unresolved>
+    -- ^ 
+    -- User data pointer passed to the logging callback.
+  , loadCallbacks :: Ptr ToxLoader
+    -- ^ 
+    -- An implementation of the loader interface specified in ${ToxLoader}.
+  , loadUserData :: <unresolved>
+    -- ^ 
+    -- User data pointer passed to each of the loader callbacks.
   }
 
 --foreign import ccall tox_options_get_ipv6_enabled :: {- options :: -} Ptr ToxOptions -> {- result :: -} Bool
@@ -441,6 +696,10 @@ data ToxOptions = ToxOptions
 
 --foreign import ccall tox_options_set_tcp_port :: {- options :: -} Ptr ToxOptions -> {- tcp_port :: -} Word16 -> {- result :: -} ()
 
+--foreign import ccall tox_options_get_hole_punching_enabled :: {- options :: -} Ptr ToxOptions -> {- result :: -} Bool
+
+--foreign import ccall tox_options_set_hole_punching_enabled :: {- options :: -} Ptr ToxOptions -> {- hole_punching_enabled :: -} Bool -> {- result :: -} ()
+
 --foreign import ccall tox_options_get_savedata_type :: {- options :: -} Ptr ToxOptions -> {- result :: -} TOX_SAVEDATA_TYPE
 
 --foreign import ccall tox_options_set_savedata_type :: {- options :: -} Ptr ToxOptions -> {- type :: -} TOX_SAVEDATA_TYPE -> {- result :: -} ()
@@ -452,6 +711,22 @@ data ToxOptions = ToxOptions
 --foreign import ccall tox_options_get_savedata_length :: {- options :: -} Ptr ToxOptions -> {- result :: -} CSize
 
 --foreign import ccall tox_options_set_savedata_length :: {- options :: -} Ptr ToxOptions -> {- length :: -} CSize -> {- result :: -} ()
+
+--foreign import ccall tox_options_get_log_callback :: {- options :: -} Ptr ToxOptions -> {- result :: -} Ptr tox_log_cb
+
+--foreign import ccall tox_options_set_log_callback :: {- options :: -} Ptr ToxOptions -> {- callback :: -} Ptr tox_log_cb -> {- result :: -} ()
+
+--foreign import ccall tox_options_get_log_user_data :: {- options :: -} Ptr ToxOptions -> {- result :: -} <unresolved>
+
+--foreign import ccall tox_options_set_log_user_data :: {- options :: -} Ptr ToxOptions -> {- user_data :: -} <unresolved> -> {- result :: -} ()
+
+--foreign import ccall tox_options_get_load_callbacks :: {- options :: -} Ptr ToxOptions -> {- result :: -} Ptr ToxLoader
+
+--foreign import ccall tox_options_set_load_callbacks :: {- options :: -} Ptr ToxOptions -> {- callbacks :: -} Ptr ToxLoader -> {- result :: -} ()
+
+--foreign import ccall tox_options_get_load_user_data :: {- options :: -} Ptr ToxOptions -> {- result :: -} <unresolved>
+
+--foreign import ccall tox_options_set_load_user_data :: {- options :: -} Ptr ToxOptions -> {- user_data :: -} <unresolved> -> {- result :: -} ()
 -- | 
 -- Initialises a ${ToxOptions} object with the default options.
 --
@@ -463,17 +738,6 @@ data ToxOptions = ToxOptions
 --
 -- @param options An options object to be filled with default options.
 --foreign import ccall tox_options_default :: {- options :: -} Ptr ToxOptions -> {- result :: -} ()
-
-data TOX_ERR_OPTIONS_NEW 
-
-  = TOX_ERR_OPTIONS_NEW_OK
-    -- ^ 
-    -- The function returned successfully.
-  
-  | TOX_ERR_OPTIONS_NEW_MALLOC
-    -- ^ 
-    -- The function failed to allocate enough memory for the options struct.
-  deriving (Eq, Ord, Enum, Bounded, Read, Show)
 -- | 
 -- Allocates a new ${ToxOptions} object and initialises it with the default
 -- options. This function can be used to preserve long term ABI compatibility by
@@ -483,7 +747,7 @@ data TOX_ERR_OPTIONS_NEW
 -- function.
 --
 -- @return A new ${ToxOptions} object with default options or NULL on failure.
---foreign import ccall tox_options_new :: {- error :: -} Ptr TOX_ERR_OPTIONS_NEW -> {- result :: -} Ptr ToxOptions
+--foreign import ccall tox_options_new :: {- error :: -} Ptr TOX_ERR_ALLOC -> {- result :: -} Ptr ToxOptions
 -- | 
 -- Releases all resources associated with an options objects.
 --
@@ -573,65 +837,6 @@ data TOX_ERR_NEW
 -- After calling this function, the Tox pointer becomes invalid. No other
 -- functions can be called, and the pointer value can no longer be read.
 --foreign import ccall tox_kill :: {- tox :: -} Ptr Tox -> {- result :: -} ()
--- | 
--- Severity level of log messages.
-data TOX_LOG_LEVEL 
-
-  = TOX_LOG_LEVEL_LOG_TRACE
-    -- ^ 
-    -- Very detailed traces including all network activity.
-  
-  | TOX_LOG_LEVEL_LOG_DEBUG
-    -- ^ 
-    -- Debug messages such as which port we bind to.
-  
-  | TOX_LOG_LEVEL_LOG_INFO
-    -- ^ 
-    -- Informational log messages such as video call status changes.
-  
-  | TOX_LOG_LEVEL_LOG_WARNING
-    -- ^ 
-    -- Warnings about internal inconsistency or logic errors.
-  
-  | TOX_LOG_LEVEL_LOG_ERROR
-    -- ^ 
-    -- Severe unexpected errors caused by external or internal inconsistency.
-  deriving (Eq, Ord, Enum, Bounded, Read, Show)
--- | 
--- @param level The severity of the log message.
--- @param file The source file from which the message originated.
--- @param line The source line from which the message originated.
--- @param func The function from which the message originated.
--- @param message The log message.
---typedef tox_log_cb = {- tox :: -} Ptr Tox -> {- level :: -} TOX_LOG_LEVEL -> {- file :: -} CString -> {- line :: -} Word32 -> {- func :: -} CString -> {- message :: -} CString -> {- user_data :: -} Ptr () -> ()
-
--- | 
--- Set the callback for the `${log}` event. Pass NULL to unset.
---
--- This event is triggered when the toxcore library logs an internal message.
--- This is mostly useful for debugging. This callback can be called from any
--- function, not just ${tox_iterate}. This means the user data lifetime must at
--- least extend between registering and unregistering it or ${tox_kill}.
---
--- Other toxcore modules such as toxav may concurrently call this callback at
--- any time. Thus, user code must make sure it is equipped to handle concurrent
--- execution, e.g. by employing appropriate mutex locking. The callback
--- registration function must not be called during execution of any other Tox
--- library function (toxcore or toxav).
---foreign import ccall tox_callback_log :: {- tox :: -} Ptr Tox -> {- callback :: -} Ptr tox_log_cb -> {- user_data :: -} Ptr () -> {- result :: -} ()
--- | 
--- Calculates the number of bytes required to store the tox instance with
--- ${tox_get_savedata}. This function cannot fail. The result is always greater than 0.
---
--- @see threading for concurrency implications.
---foreign import ccall tox_get_savedata_size :: {- tox :: -} Ptr Tox -> {- result :: -} CSize
--- | 
--- Store all information associated with the tox instance to a byte array.
---
--- @param savedata A memory region large enough to store the tox instance
---   data. Call ${tox_get_savedata_size} to find the number of bytes required. If this parameter
---   is NULL, this function has no effect.
---foreign import ccall tox_get_savedata :: {- tox :: -} Ptr Tox -> {- savedata :: -} Ptr (Word8{-[tox_get_savedata_size]-}) -> {- result :: -} ()
 
 
 --------------------------------------------------------------------------------
@@ -756,12 +961,15 @@ data TOX_CONNECTION
 -- @see ${TOX_ADDRESS_SIZE} for the address format.
 --foreign import ccall tox_self_get_address :: {- tox :: -} Ptr Tox -> {- address :: -} Ptr (Word8{-[TOX_ADDRESS_SIZE]-}) -> {- result :: -} ()
 -- | 
--- Set the 4-byte nospam part of the address.
+-- Set the 4-byte nospam part of the address. This value is expected in host
+-- byte order. I.e. 0x12345678 will form the bytes [12, 34, 56, 78] in the
+-- nospam part of the Tox friend address.
 --
 -- @param nospam Any 32 bit unsigned integer.
 --foreign import ccall tox_self_set_nospam :: {- tox :: -} Ptr Tox -> {- nospam :: -} Word32 -> {- result :: -} ()
 -- | 
--- Get the 4-byte nospam part of the address.
+-- Get the 4-byte nospam part of the address. This value is returned in host
+-- byte order.
 --foreign import ccall tox_self_get_nospam :: {- tox :: -} Ptr Tox -> {- result :: -} Word32
 -- | 
 -- Copy the Tox Public Key (long term) from the Tox object.
@@ -1331,11 +1539,6 @@ data TOX_ERR_FRIEND_SEND_MESSAGE
 
 -- | 
 -- @param public_key The Public Key of the user who sent the friend request.
--- @param time_delta A delta in seconds between when the message was composed
---   and when it is being transmitted. For messages that are sent immediately,
---   it will be 0. If a message was written and couldn't be sent immediately
---   (due to a connection failure, for example), the time_delta is an
---   approximation of when it was composed.
 -- @param message The message they sent along with the request.
 -- @param length The size of the message byte array.
 --typedef tox_friend_request_cb = {- tox :: -} Ptr Tox -> {- public_key :: -} Ptr (Word8{-[TOX_PUBLIC_KEY_SIZE]-}) -> {- message :: -} Ptr (Word8{-[length <= TOX_MAX_MESSAGE_LENGTH]-}) -> {- length :: -} CSize -> {- user_data :: -} Ptr () -> ()
@@ -1347,11 +1550,8 @@ data TOX_ERR_FRIEND_SEND_MESSAGE
 --foreign import ccall tox_callback_friend_request :: {- tox :: -} Ptr Tox -> {- callback :: -} Ptr tox_friend_request_cb -> {- result :: -} ()
 -- | 
 -- @param friend_number The friend number of the friend who sent the message.
--- @param time_delta Time between composition and sending.
 -- @param message The message data they sent.
 -- @param length The size of the message byte array.
---
--- @see ${friend_request} for more information on time_delta.
 --typedef tox_friend_message_cb = {- tox :: -} Ptr Tox -> {- friend_number :: -} Word32 -> {- type :: -} TOX_MESSAGE_TYPE -> {- message :: -} Ptr (Word8{-[length <= TOX_MAX_MESSAGE_LENGTH]-}) -> {- length :: -} CSize -> {- user_data :: -} Ptr () -> ()
 
 -- | 
