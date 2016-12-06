@@ -7,7 +7,7 @@ let rec add_types name ty = function
       let decl = add_types name ty decl in
       Decl_Comment (comment, decl)
 
-  | Decl_Function (Ty_Auto, fname, parameters, error_list) as decl ->
+  | Decl_Function (Ty_Auto, fname, parameters, error_list) ->
       let void =
         if error_list = Err_None then
           TypeName.void
@@ -37,11 +37,14 @@ let rec add_types name ty = function
             let parameters = parameters @ [Param (ty, name)] in
             Decl_Function (void, fname, parameters, error_list)
 
-        | _ -> failwith @@ show_decl Format.pp_print_string decl
+        | _ -> failwith ("cannot generate unknown special function: " ^ fname)
       end
 
   | decl ->
-      failwith @@ show_decl Format.pp_print_string decl
+      failwith (
+        "cannot infer types for decl: " ^
+        show_decl Format.pp_print_string decl
+      )
 
 
 let map_decl v state = function

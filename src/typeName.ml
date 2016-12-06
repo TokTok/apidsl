@@ -6,12 +6,6 @@ let bool = Ty_LName "bool"
 let void = Ty_LName "void"
 let size_t = Ty_LName "size_t"
 
-let size_t_ symtab =
-  Ty_LName (SymbolTable.lookup symtab [] "size_t")
-
-let void_ symtab =
-  Ty_LName (SymbolTable.lookup symtab [] "void")
-
 
 let rec is_array = function
   | Ty_Const ty -> is_array ty
@@ -37,4 +31,4 @@ let rec length_param = function
   | Ty_Array (_, size_spec) ->
       length_param_of_size_spec size_spec
 
-  | ty -> failwith "Not an array type"
+  | ty -> failwith "not an array type"

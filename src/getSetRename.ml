@@ -39,7 +39,7 @@ let rec rename_symbols name symtab = function
 
         | _ ->
             failwith (
-              "Unknown function: " ^
+              "unknown function: " ^
               show_decl (SymbolTable.pp_symbol symtab) decl
             )
       end
@@ -53,7 +53,10 @@ let rec rename_symbols name symtab = function
         symtab
 
   | decl ->
-      failwith @@ show_decl (SymbolTable.pp_symbol symtab) decl
+      failwith (
+        "unhandled declaration in get/set rename: " ^
+        show_decl (SymbolTable.pp_symbol symtab) decl
+      )
 
 
 let fold_decl v symtab = function

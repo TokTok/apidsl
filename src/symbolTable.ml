@@ -105,7 +105,7 @@ let lookup_qualified (_, root : t) scopes path =
   let name, member =
     match path with
     | name :: member -> name, member
-    | [] -> failwith "Empty qualified symbol name"
+    | [] -> failwith "empty qualified symbol name"
   in
   let scopes =
     List.fold_right

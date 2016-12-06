@@ -46,13 +46,13 @@ let map_uname symtab v scopes uname =
   try
     lookup symtab scopes [uname]
   with Not_found ->
-    failwith @@ "Unresolved symbol: " ^ uname
+    failwith @@ "unresolved symbol: " ^ uname
 
 let map_lname symtab v scopes lname =
   try
     lookup symtab scopes [lname]
   with Not_found ->
-    failwith @@ "Unresolved symbol: " ^ lname
+    failwith @@ "unresolved symbol: " ^ lname
 
 
 let map_comment_fragment symtab v scopes = function
@@ -69,7 +69,7 @@ let map_comment_fragment symtab v scopes = function
                  | hd :: tl ->
                      List.rev @@ ("event " ^ hd) :: tl
                  | [] ->
-                     failwith "Empty name after event in comment name reference"
+                     failwith "empty name after event in comment name reference"
           ) path []
       in
       let var' = lookup symtab scopes path in

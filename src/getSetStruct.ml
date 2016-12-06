@@ -18,7 +18,7 @@ let rec make_accessors acc ns = function
         ) :: acc in
       make_accessors acc ns decls
   | decl :: _ ->
-      failwith @@ "Unhandled decl in GetSetStruct.make_accessors: "
+      failwith @@ "cannot generate accessors for decl: "
                   ^ (show_decl Format.pp_print_string decl)
 
 
