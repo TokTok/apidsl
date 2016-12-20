@@ -1,0 +1,15 @@
+(ApiAst.Api (None,
+   [(ApiAst.Decl_Class (foo,
+       [(ApiAst.Decl_Function ((ApiAst.Ty_LName uint8_t), bar, [],
+           ApiAst.Err_None));
+         (ApiAst.Decl_Comment (
+            (ApiAst.Cmt_Doc [ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " Moop.")]),
+            (ApiAst.Decl_Struct (this, [get; set],
+               [(ApiAst.Decl_Member ((ApiAst.Ty_LName uint8_t), order))]))
+            ));
+         (ApiAst.Decl_Function ((ApiAst.Ty_LName uint8_t), cow, [],
+            ApiAst.Err_None))
+         ]
+       ))
+     ],
+   None))

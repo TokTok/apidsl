@@ -1,0 +1,19 @@
+
+class foo {
+
+  uint8_t bar();
+
+  /**
+   * Moop.
+   */
+  struct thisget,set {
+  
+    uint8_t order;
+    
+  }
+  
+
+  uint8_t cow();
+}
+
+
