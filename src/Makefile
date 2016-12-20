@@ -7,7 +7,7 @@ tests: $(patsubst %.api.h,%.out.h,$(wildcard tests/*.h))
 
 tests/%.out.h: tests/%.api.h build
 	-./apigen.native $< > $@ 2>&1
-	diff -u $@ tests/$*.exp.h
+	diff -u tests/$*.exp.h $@
 	rm -f $@
 
 # We have our own for now, because upstream is broken.
