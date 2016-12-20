@@ -179,7 +179,7 @@ const VERSION_MINOR                = 0;
  * The patch or revision number. Incremented when bugfixes are applied without
  * changing any functionality or API or ABI.
  */
-const VERSION_PATCH                = 2;
+const VERSION_PATCH                = 5;
 
 /**
  * A macro to check at preprocessing time whether the client code is compatible
@@ -332,6 +332,195 @@ enum class MESSAGE_TYPE {
 }
 
 
+error for alloc {
+  /**
+   * The function failed to allocate enough memory for the data structure.
+   */
+  MALLOC,
+}
+
+
+/*******************************************************************************
+ *
+ * :: Loading/saving of internal state
+ *
+ ******************************************************************************/
+
+
+uint8_t[size] savedata {
+  /**
+   * Calculates the number of bytes required to store the tox instance with
+   * $get. This function cannot fail. The result is always greater than 0.
+   *
+   * @see threading for concurrency implications.
+   */
+  size();
+
+  /**
+   * Store all information associated with the tox instance to a byte array.
+   *
+   * @param savedata A memory region large enough to store the tox instance
+   *   data. Call $size to find the number of bytes required. If this parameter
+   *   is NULL, this function has no effect.
+   */
+  get();
+}
+
+
+static class saver {
+  /**
+   * Write an 8 bit unsigned integer.
+   */
+  typedef void u08_cb(uint8_t value, any user_data);
+  /**
+   * Write a 16 bit unsigned integer.
+   */
+  typedef void u16_cb(uint16_t value, any user_data);
+  /**
+   * Write a 32 bit unsigned integer.
+   */
+  typedef void u32_cb(uint32_t value, any user_data);
+  /**
+   * Write a 64 bit unsigned integer.
+   */
+  typedef void u64_cb(uint64_t value, any user_data);
+
+  /**
+   * Write an array of the given length. This call is followed by exactly
+   * `elements` calls to other functions. Arrays may be nested, so each
+   * element of the array may be another call to $arr_cb with its own element
+   * count and subsequent calls.
+   */
+  typedef void arr_cb(size_t elements, any user_data);
+
+  /**
+   * Write a list of key/value pairs. A call to this function is followed by
+   * `elements * 2` calls to other functions. Every other call is either key
+   * or value. Keys can be assumed to be unique.
+   */
+  typedef void map_cb(size_t elements, any user_data);
+
+  /**
+   * Write a byte array of a given length.
+   */
+  typedef void bin_cb(const uint8_t[length] data, any user_data);
+
+  /**
+   * This struct contains callbacks for the save function. You will probably
+   * want to implement all callbacks to produce a useful result.
+   */
+  struct this [get, set] {
+    u08_cb *u08;
+    u16_cb *u16;
+    u32_cb *u32;
+    u64_cb *u64;
+
+    arr_cb *arr;
+    map_cb *map;
+    bin_cb *bin;
+  }
+
+
+  /**
+   * Allocates a new $this object and initialises it with the default
+   * handlers.
+   *
+   * Objects returned from this function must be freed using the $free
+   * function.
+   *
+   * @return A new $this object with default options or NULL on failure.
+   */
+  static this new()
+      with error for alloc;
+
+
+  /**
+   * Releases all resources associated with a saver objects.
+   *
+   * Passing a pointer that was not returned by $new results in
+   * undefined behaviour.
+   */
+  void free();
+}
+
+void save(const saver_t *saver, any user_data);
+
+
+static class loader {
+  /**
+   * Read an 8 bit unsigned integer.
+   */
+  typedef uint8_t u08_cb(any user_data);
+  /**
+   * Read a 16 bit unsigned integer.
+   */
+  typedef uint16_t u16_cb(any user_data);
+  /**
+   * Read a 32 bit unsigned integer.
+   */
+  typedef uint32_t u32_cb(any user_data);
+  /**
+   * Read a 64 bit unsigned integer.
+   */
+  typedef uint64_t u64_cb(any user_data);
+
+  /**
+   * Read the an array length. This call is followed by exactly the returned
+   * number calls to other functions.
+   */
+  typedef size_t arr_cb(any user_data);
+
+  /**
+   * Read the length of the list of key/value pairs. A call to this function
+   * is followed by twice the returned number of calls to other functions.
+   * Every other call is either key or value.
+   */
+  typedef size_t map_cb(any user_data);
+
+  /**
+   * Read a byte array of a given length.
+   */
+  typedef void bin_cb(uint8_t[length] data, any user_data);
+
+  /**
+   * This struct contains callbacks for the load function. You will probably
+   * want to implement all callbacks to produce a useful result.
+   */
+  struct this [get, set] {
+    u08_cb *u08;
+    u16_cb *u16;
+    u32_cb *u32;
+    u64_cb *u64;
+
+    arr_cb *arr;
+    map_cb *map;
+    bin_cb *bin;
+  }
+
+
+  /**
+   * Allocates a new $this object and initialises it with the default
+   * handlers.
+   *
+   * Objects returned from this function must be freed using the $free
+   * function.
+   *
+   * @return A new $this object with default options or NULL on failure.
+   */
+  static this new()
+      with error for alloc;
+
+
+  /**
+   * Releases all resources associated with a loader objects.
+   *
+   * Passing a pointer that was not returned by $new results in
+   * undefined behaviour.
+   */
+  void free();
+}
+
+
 /*******************************************************************************
  *
  * :: Startup options
@@ -376,6 +565,52 @@ enum class SAVEDATA_TYPE {
 }
 
 
+/**
+ * Severity level of log messages.
+ */
+enum class LOG_LEVEL {
+  /**
+   * Very detailed traces including all network activity.
+   */
+  TRACE,
+  /**
+   * Debug messages such as which port we bind to.
+   */
+  DEBUG,
+  /**
+   * Informational log messages such as video call status changes.
+   */
+  INFO,
+  /**
+   * Warnings about internal inconsistency or logic errors.
+   */
+  WARNING,
+  /**
+   * Severe unexpected errors caused by external or internal inconsistency.
+   */
+  ERROR,
+}
+
+/**
+ * This event is triggered when the toxcore library logs an internal message.
+ * This is mostly useful for debugging. This callback can be called from any
+ * function, not just $iterate. This means the user data lifetime must at
+ * least extend between registering and unregistering it or $kill.
+ *
+ * Other toxcore modules such as toxav may concurrently call this callback at
+ * any time. Thus, user code must make sure it is equipped to handle concurrent
+ * execution, e.g. by employing appropriate mutex locking.
+ *
+ * @param level The severity of the log message.
+ * @param file The source file from which the message originated.
+ * @param line The source line from which the message originated.
+ * @param func The function from which the message originated.
+ * @param message The log message.
+ * @param user_data The user data pointer passed to $new in options.
+ */
+typedef void log_cb(LOG_LEVEL level, string file, uint32_t line, string func, string message, any user_data);
+
+
 static class options {
   /**
    * This struct contains all the startup options for Tox. You can either
@@ -387,9 +622,10 @@ static class options {
    * in future versions of the API, code that allocates it itself will become
    * incompatible.
    *
-   * The memory layout of this struct (size, alignment, and field order) is not
-   * part of the ABI. To remain compatible, prefer to use $new to allocate the
-   * object and accessor functions to set the members.
+   * @deprecated The memory layout of this struct (size, alignment, and field
+   * order) is not part of the ABI. To remain compatible, prefer to use $new to
+   * allocate the object and accessor functions to set the members. The struct
+   * will become opaque (i.e. the definition will become private) in v0.1.0.
    */
   struct this [get, set] {
     /**
@@ -472,6 +708,11 @@ static class options {
      */
     uint16_t tcp_port;
 
+    /**
+     * Enables or disables UDP hole-punching in toxcore. (Default: enabled).
+     */
+    bool hole_punching_enabled;
+
     namespace savedata {
       /**
        * The type of savedata to load from.
@@ -490,6 +731,30 @@ static class options {
        * The length of the $data array.
        */
       size_t length;
+    }
+
+    namespace log {
+      /**
+       * Logging callback for the new tox instance.
+       */
+      log_cb *callback;
+
+      /**
+       * User data pointer passed to the logging callback.
+       */
+      any user_data;
+    }
+
+    namespace load {
+      /**
+       * An implementation of the loader interface specified in $loader_t.
+       */
+      const loader_t *callbacks;
+
+      /**
+       * User data pointer passed to each of the loader callbacks.
+       */
+      any user_data;
     }
   }
 
@@ -518,12 +783,8 @@ static class options {
    *
    * @return A new $this object with default options or NULL on failure.
    */
-  static this new() {
-    /**
-     * The function failed to allocate enough memory for the options struct.
-     */
-    MALLOC,
-  }
+  static this new()
+      with error for alloc;
 
 
   /**
@@ -618,77 +879,6 @@ static this new(const options_t *options) {
  * functions can be called, and the pointer value can no longer be read.
  */
 void kill();
-
-
-/**
- * Severity level of log messages.
- */
-enum class LOG_LEVEL {
-  /**
-   * Very detailed traces including all network activity.
-   */
-  LOG_TRACE,
-  /**
-   * Debug messages such as which port we bind to.
-   */
-  LOG_DEBUG,
-  /**
-   * Informational log messages such as video call status changes.
-   */
-  LOG_INFO,
-  /**
-   * Warnings about internal inconsistency or logic errors.
-   */
-  LOG_WARNING,
-  /**
-   * Severe unexpected errors caused by external or internal inconsistency.
-   */
-  LOG_ERROR,
-}
-
-/**
- * This event is triggered when the toxcore library logs an internal message.
- * This is mostly useful for debugging. This callback can be called from any
- * function, not just $iterate. This means the user data lifetime must at
- * least extend between registering and unregistering it or $kill.
- *
- * Other toxcore modules such as toxav may concurrently call this callback at
- * any time. Thus, user code must make sure it is equipped to handle concurrent
- * execution, e.g. by employing appropriate mutex locking. The callback
- * registration function must not be called during execution of any other Tox
- * library function (toxcore or toxav).
- */
-event log {
-  /**
-   * @param level The severity of the log message.
-   * @param file The source file from which the message originated.
-   * @param line The source line from which the message originated.
-   * @param func The function from which the message originated.
-   * @param message The log message.
-   */
-  typedef void(LOG_LEVEL level, string file, uint32_t line, string func,
-               string message);
-}
-
-
-uint8_t[size] savedata {
-  /**
-   * Calculates the number of bytes required to store the tox instance with
-   * $get. This function cannot fail. The result is always greater than 0.
-   *
-   * @see threading for concurrency implications.
-   */
-  size();
-
-  /**
-   * Store all information associated with the tox instance to a byte array.
-   *
-   * @param savedata A memory region large enough to store the tox instance
-   *   data. Call $size to find the number of bytes required. If this parameter
-   *   is NULL, this function has no effect.
-   */
-  get();
-}
 
 
 /*******************************************************************************
@@ -837,14 +1027,17 @@ inline namespace self {
 
   uint32_t nospam {
     /**
-     * Set the 4-byte nospam part of the address.
+     * Set the 4-byte nospam part of the address. This value is expected in host
+     * byte order. I.e. 0x12345678 will form the bytes [12, 34, 56, 78] in the
+     * nospam part of the Tox friend address.
      *
      * @param nospam Any 32 bit unsigned integer.
      */
     set();
 
     /**
-     * Get the 4-byte nospam part of the address.
+     * Get the 4-byte nospam part of the address. This value is returned in host
+     * byte order.
      */
     get();
   }
@@ -1524,16 +1717,10 @@ namespace friend {
   event request const {
     /**
      * @param public_key The Public Key of the user who sent the friend request.
-     * @param time_delta A delta in seconds between when the message was composed
-     *   and when it is being transmitted. For messages that are sent immediately,
-     *   it will be 0. If a message was written and couldn't be sent immediately
-     *   (due to a connection failure, for example), the time_delta is an
-     *   approximation of when it was composed.
      * @param message The message they sent along with the request.
      * @param length The size of the message byte array.
      */
     typedef void(const uint8_t[PUBLIC_KEY_SIZE] public_key,
-                 // uint32_t time_delta,
                  const uint8_t[length <= MAX_MESSAGE_LENGTH] message);
   }
 
@@ -1544,15 +1731,10 @@ namespace friend {
   event message const {
     /**
      * @param friend_number The friend number of the friend who sent the message.
-     * @param time_delta Time between composition and sending.
      * @param message The message data they sent.
      * @param length The size of the message byte array.
-     *
-     * @see ${event request} for more information on time_delta.
      */
-    typedef void(uint32_t friend_number,
-                 // uint32_t time_delta,
-                 MESSAGE_TYPE type,
+    typedef void(uint32_t friend_number, MESSAGE_TYPE type,
                  const uint8_t[length <= MAX_MESSAGE_LENGTH] message);
   }
 

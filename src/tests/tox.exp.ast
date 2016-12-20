@@ -294,7 +294,7 @@
                            (ApiAst.Cmtf_Doc
                               " changing any functionality or API or ABI.")
                            ]),
-                      (ApiAst.Decl_Const (VERSION_PATCH, (ApiAst.E_Number 2)
+                      (ApiAst.Decl_Const (VERSION_PATCH, (ApiAst.E_Number 5)
                          ))
                       ));
                    (ApiAst.Decl_Comment (
@@ -553,6 +553,474 @@
                            ]
                          ))
                       ));
+                   (ApiAst.Decl_Error (alloc,
+                      [(ApiAst.Enum_Name (
+                          (ApiAst.Cmt_Doc
+                             [ApiAst.Cmtf_Break;
+                               (ApiAst.Cmtf_Doc
+                                  " The function failed to allocate enough memory for the data structure.")
+                               ]),
+                          MALLOC, None))
+                        ]
+                      ));
+                   (ApiAst.Decl_Section
+                      [ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                        (ApiAst.Cmtf_Doc
+                           " :: Loading/saving of internal state");
+                        ApiAst.Cmtf_Break]);
+                   (ApiAst.Decl_GetSet (
+                      (ApiAst.Ty_Array ((ApiAst.Ty_LName uint8_t),
+                         (ApiAst.Ss_LName size))),
+                      savedata,
+                      [(ApiAst.Decl_Comment (
+                          (ApiAst.Cmt_Doc
+                             [ApiAst.Cmtf_Break;
+                               (ApiAst.Cmtf_Doc
+                                  " Calculates the number of bytes required to store the tox instance with");
+                               ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " ");
+                               (ApiAst.Cmtf_Var [(ApiAst.Var_LName get)]);
+                               (ApiAst.Cmtf_Doc
+                                  ". This function cannot fail. The result is always greater than 0.");
+                               ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                               (ApiAst.Cmtf_Doc
+                                  " @see threading for concurrency implications.")
+                               ]),
+                          (ApiAst.Decl_Function (ApiAst.Ty_Auto, size, 
+                             [], ApiAst.Err_None))
+                          ));
+                        (ApiAst.Decl_Comment (
+                           (ApiAst.Cmt_Doc
+                              [ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " Store all information associated with the tox instance to a byte array.");
+                                ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   " @param savedata A memory region large enough to store the tox instance");
+                                ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc "   data. Call ");
+                                (ApiAst.Cmtf_Var [(ApiAst.Var_LName size)]);
+                                (ApiAst.Cmtf_Doc
+                                   " to find the number of bytes required. If this parameter");
+                                ApiAst.Cmtf_Break;
+                                (ApiAst.Cmtf_Doc
+                                   "   is NULL, this function has no effect.")
+                                ]),
+                           (ApiAst.Decl_Function (ApiAst.Ty_Auto, get, 
+                              [], ApiAst.Err_None))
+                           ))
+                        ]
+                      ));
+                   (ApiAst.Decl_Static
+                      (ApiAst.Decl_Class (saver,
+                         [(ApiAst.Decl_Comment (
+                             (ApiAst.Cmt_Doc
+                                [ApiAst.Cmtf_Break;
+                                  (ApiAst.Cmtf_Doc
+                                     " Write an 8 bit unsigned integer.")
+                                  ]),
+                             (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void),
+                                u08_cb,
+                                [(ApiAst.Param ((ApiAst.Ty_LName uint8_t),
+                                    value));
+                                  (ApiAst.Param ((ApiAst.Ty_TVar any),
+                                     user_data))
+                                  ]
+                                ))
+                             ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Write a 16 bit unsigned integer.")
+                                   ]),
+                              (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void),
+                                 u16_cb,
+                                 [(ApiAst.Param ((ApiAst.Ty_LName uint16_t),
+                                     value));
+                                   (ApiAst.Param ((ApiAst.Ty_TVar any),
+                                      user_data))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Write a 32 bit unsigned integer.")
+                                   ]),
+                              (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void),
+                                 u32_cb,
+                                 [(ApiAst.Param ((ApiAst.Ty_LName uint32_t),
+                                     value));
+                                   (ApiAst.Param ((ApiAst.Ty_TVar any),
+                                      user_data))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Write a 64 bit unsigned integer.")
+                                   ]),
+                              (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void),
+                                 u64_cb,
+                                 [(ApiAst.Param ((ApiAst.Ty_LName uint64_t),
+                                     value));
+                                   (ApiAst.Param ((ApiAst.Ty_TVar any),
+                                      user_data))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Write an array of the given length. This call is followed by exactly");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " `elements` calls to other functions. Arrays may be nested, so each");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " element of the array may be another call to ");
+                                   (ApiAst.Cmtf_Var
+                                      [(ApiAst.Var_LName arr_cb)]);
+                                   (ApiAst.Cmtf_Doc " with its own element");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " count and subsequent calls.")
+                                   ]),
+                              (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void),
+                                 arr_cb,
+                                 [(ApiAst.Param ((ApiAst.Ty_LName size_t),
+                                     elements));
+                                   (ApiAst.Param ((ApiAst.Ty_TVar any),
+                                      user_data))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Write a list of key/value pairs. A call to this function is followed by");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " `elements * 2` calls to other functions. Every other call is either key");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " or value. Keys can be assumed to be unique.")
+                                   ]),
+                              (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void),
+                                 map_cb,
+                                 [(ApiAst.Param ((ApiAst.Ty_LName size_t),
+                                     elements));
+                                   (ApiAst.Param ((ApiAst.Ty_TVar any),
+                                      user_data))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Write a byte array of a given length.")
+                                   ]),
+                              (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void),
+                                 bin_cb,
+                                 [(ApiAst.Param (
+                                     (ApiAst.Ty_Const
+                                        (ApiAst.Ty_Array (
+                                           (ApiAst.Ty_LName uint8_t),
+                                           (ApiAst.Ss_LName length)))),
+                                     data));
+                                   (ApiAst.Param ((ApiAst.Ty_TVar any),
+                                      user_data))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " This struct contains callbacks for the save function. You will probably");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " want to implement all callbacks to produce a useful result.")
+                                   ]),
+                              (ApiAst.Decl_Struct (this, [get; set],
+                                 [(ApiAst.Decl_Member (
+                                     (ApiAst.Ty_Pointer
+                                        (ApiAst.Ty_LName u08_cb)),
+                                     u08));
+                                   (ApiAst.Decl_Member (
+                                      (ApiAst.Ty_Pointer
+                                         (ApiAst.Ty_LName u16_cb)),
+                                      u16));
+                                   (ApiAst.Decl_Member (
+                                      (ApiAst.Ty_Pointer
+                                         (ApiAst.Ty_LName u32_cb)),
+                                      u32));
+                                   (ApiAst.Decl_Member (
+                                      (ApiAst.Ty_Pointer
+                                         (ApiAst.Ty_LName u64_cb)),
+                                      u64));
+                                   (ApiAst.Decl_Member (
+                                      (ApiAst.Ty_Pointer
+                                         (ApiAst.Ty_LName arr_cb)),
+                                      arr));
+                                   (ApiAst.Decl_Member (
+                                      (ApiAst.Ty_Pointer
+                                         (ApiAst.Ty_LName map_cb)),
+                                      map));
+                                   (ApiAst.Decl_Member (
+                                      (ApiAst.Ty_Pointer
+                                         (ApiAst.Ty_LName bin_cb)),
+                                      bin))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc " Allocates a new ");
+                                   (ApiAst.Cmtf_Var [(ApiAst.Var_LName this)]);
+                                   (ApiAst.Cmtf_Doc
+                                      " object and initialises it with the default");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc " handlers.");
+                                   ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Objects returned from this function must be freed using the ");
+                                   (ApiAst.Cmtf_Var [(ApiAst.Var_LName free)]);
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc " function.");
+                                   ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc " @return A new ");
+                                   (ApiAst.Cmtf_Var [(ApiAst.Var_LName this)]);
+                                   (ApiAst.Cmtf_Doc
+                                      " object with default options or NULL on failure.")
+                                   ]),
+                              (ApiAst.Decl_Static
+                                 (ApiAst.Decl_Function (
+                                    (ApiAst.Ty_Pointer (ApiAst.Ty_LName this)),
+                                    new, [], (ApiAst.Err_From alloc))))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Releases all resources associated with a saver objects.");
+                                   ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Passing a pointer that was not returned by ");
+                                   (ApiAst.Cmtf_Var [(ApiAst.Var_LName new)]);
+                                   (ApiAst.Cmtf_Doc " results in");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc " undefined behaviour.")]),
+                              (ApiAst.Decl_Function ((ApiAst.Ty_LName void),
+                                 free, [], ApiAst.Err_None))
+                              ))
+                           ]
+                         )));
+                   (ApiAst.Decl_Function ((ApiAst.Ty_LName void), save,
+                      [(ApiAst.Param (
+                          (ApiAst.Ty_Const
+                             (ApiAst.Ty_Pointer (ApiAst.Ty_LName saver_t))),
+                          saver));
+                        (ApiAst.Param ((ApiAst.Ty_TVar any), user_data))],
+                      ApiAst.Err_None));
+                   (ApiAst.Decl_Static
+                      (ApiAst.Decl_Class (loader,
+                         [(ApiAst.Decl_Comment (
+                             (ApiAst.Cmt_Doc
+                                [ApiAst.Cmtf_Break;
+                                  (ApiAst.Cmtf_Doc
+                                     " Read an 8 bit unsigned integer.")
+                                  ]),
+                             (ApiAst.Decl_Typedef ((ApiAst.Ty_LName uint8_t),
+                                u08_cb,
+                                [(ApiAst.Param ((ApiAst.Ty_TVar any),
+                                    user_data))
+                                  ]
+                                ))
+                             ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Read a 16 bit unsigned integer.")
+                                   ]),
+                              (ApiAst.Decl_Typedef (
+                                 (ApiAst.Ty_LName uint16_t), u16_cb,
+                                 [(ApiAst.Param ((ApiAst.Ty_TVar any),
+                                     user_data))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Read a 32 bit unsigned integer.")
+                                   ]),
+                              (ApiAst.Decl_Typedef (
+                                 (ApiAst.Ty_LName uint32_t), u32_cb,
+                                 [(ApiAst.Param ((ApiAst.Ty_TVar any),
+                                     user_data))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Read a 64 bit unsigned integer.")
+                                   ]),
+                              (ApiAst.Decl_Typedef (
+                                 (ApiAst.Ty_LName uint64_t), u64_cb,
+                                 [(ApiAst.Param ((ApiAst.Ty_TVar any),
+                                     user_data))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Read the an array length. This call is followed by exactly the returned");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " number calls to other functions.")
+                                   ]),
+                              (ApiAst.Decl_Typedef ((ApiAst.Ty_LName size_t),
+                                 arr_cb,
+                                 [(ApiAst.Param ((ApiAst.Ty_TVar any),
+                                     user_data))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Read the length of the list of key/value pairs. A call to this function");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " is followed by twice the returned number of calls to other functions.");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Every other call is either key or value.")
+                                   ]),
+                              (ApiAst.Decl_Typedef ((ApiAst.Ty_LName size_t),
+                                 map_cb,
+                                 [(ApiAst.Param ((ApiAst.Ty_TVar any),
+                                     user_data))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Read a byte array of a given length.")
+                                   ]),
+                              (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void),
+                                 bin_cb,
+                                 [(ApiAst.Param (
+                                     (ApiAst.Ty_Array (
+                                        (ApiAst.Ty_LName uint8_t),
+                                        (ApiAst.Ss_LName length))),
+                                     data));
+                                   (ApiAst.Param ((ApiAst.Ty_TVar any),
+                                      user_data))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " This struct contains callbacks for the load function. You will probably");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " want to implement all callbacks to produce a useful result.")
+                                   ]),
+                              (ApiAst.Decl_Struct (this, [get; set],
+                                 [(ApiAst.Decl_Member (
+                                     (ApiAst.Ty_Pointer
+                                        (ApiAst.Ty_LName u08_cb)),
+                                     u08));
+                                   (ApiAst.Decl_Member (
+                                      (ApiAst.Ty_Pointer
+                                         (ApiAst.Ty_LName u16_cb)),
+                                      u16));
+                                   (ApiAst.Decl_Member (
+                                      (ApiAst.Ty_Pointer
+                                         (ApiAst.Ty_LName u32_cb)),
+                                      u32));
+                                   (ApiAst.Decl_Member (
+                                      (ApiAst.Ty_Pointer
+                                         (ApiAst.Ty_LName u64_cb)),
+                                      u64));
+                                   (ApiAst.Decl_Member (
+                                      (ApiAst.Ty_Pointer
+                                         (ApiAst.Ty_LName arr_cb)),
+                                      arr));
+                                   (ApiAst.Decl_Member (
+                                      (ApiAst.Ty_Pointer
+                                         (ApiAst.Ty_LName map_cb)),
+                                      map));
+                                   (ApiAst.Decl_Member (
+                                      (ApiAst.Ty_Pointer
+                                         (ApiAst.Ty_LName bin_cb)),
+                                      bin))
+                                   ]
+                                 ))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc " Allocates a new ");
+                                   (ApiAst.Cmtf_Var [(ApiAst.Var_LName this)]);
+                                   (ApiAst.Cmtf_Doc
+                                      " object and initialises it with the default");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc " handlers.");
+                                   ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Objects returned from this function must be freed using the ");
+                                   (ApiAst.Cmtf_Var [(ApiAst.Var_LName free)]);
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc " function.");
+                                   ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc " @return A new ");
+                                   (ApiAst.Cmtf_Var [(ApiAst.Var_LName this)]);
+                                   (ApiAst.Cmtf_Doc
+                                      " object with default options or NULL on failure.")
+                                   ]),
+                              (ApiAst.Decl_Static
+                                 (ApiAst.Decl_Function (
+                                    (ApiAst.Ty_Pointer (ApiAst.Ty_LName this)),
+                                    new, [], (ApiAst.Err_From alloc))))
+                              ));
+                           (ApiAst.Decl_Comment (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Releases all resources associated with a loader objects.");
+                                   ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Passing a pointer that was not returned by ");
+                                   (ApiAst.Cmtf_Var [(ApiAst.Var_LName new)]);
+                                   (ApiAst.Cmtf_Doc " results in");
+                                   ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc " undefined behaviour.")]),
+                              (ApiAst.Decl_Function ((ApiAst.Ty_LName void),
+                                 free, [], ApiAst.Err_None))
+                              ))
+                           ]
+                         )));
                    (ApiAst.Decl_Section
                       [ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
                         (ApiAst.Cmtf_Doc " :: Startup options");
@@ -620,6 +1088,107 @@
                            ]
                          ))
                       ));
+                   (ApiAst.Decl_Comment (
+                      (ApiAst.Cmt_Doc
+                         [ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " Severity level of log messages.")
+                           ]),
+                      (ApiAst.Decl_Enum (ApiAst.Enum_Class, LOG_LEVEL,
+                         [(ApiAst.Enum_Name (
+                             (ApiAst.Cmt_Doc
+                                [ApiAst.Cmtf_Break;
+                                  (ApiAst.Cmtf_Doc
+                                     " Very detailed traces including all network activity.")
+                                  ]),
+                             TRACE, None));
+                           (ApiAst.Enum_Name (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Debug messages such as which port we bind to.")
+                                   ]),
+                              DEBUG, None));
+                           (ApiAst.Enum_Name (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Informational log messages such as video call status changes.")
+                                   ]),
+                              INFO, None));
+                           (ApiAst.Enum_Name (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Warnings about internal inconsistency or logic errors.")
+                                   ]),
+                              WARNING, None));
+                           (ApiAst.Enum_Name (
+                              (ApiAst.Cmt_Doc
+                                 [ApiAst.Cmtf_Break;
+                                   (ApiAst.Cmtf_Doc
+                                      " Severe unexpected errors caused by external or internal inconsistency.")
+                                   ]),
+                              ERROR, None))
+                           ]
+                         ))
+                      ));
+                   (ApiAst.Decl_Comment (
+                      (ApiAst.Cmt_Doc
+                         [ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " This event is triggered when the toxcore library logs an internal message.");
+                           ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " This is mostly useful for debugging. This callback can be called from any");
+                           ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc " function, not just ");
+                           (ApiAst.Cmtf_Var [(ApiAst.Var_LName iterate)]);
+                           (ApiAst.Cmtf_Doc
+                              ". This means the user data lifetime must at");
+                           ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " least extend between registering and unregistering it or ");
+                           (ApiAst.Cmtf_Var [(ApiAst.Var_LName kill)]);
+                           (ApiAst.Cmtf_Doc "."); ApiAst.Cmtf_Break;
+                           ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " Other toxcore modules such as toxav may concurrently call this callback at");
+                           ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " any time. Thus, user code must make sure it is equipped to handle concurrent");
+                           ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " execution, e.g. by employing appropriate mutex locking.");
+                           ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " @param level The severity of the log message.");
+                           ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " @param file The source file from which the message originated.");
+                           ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " @param line The source line from which the message originated.");
+                           ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " @param func The function from which the message originated.");
+                           ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " @param message The log message.");
+                           ApiAst.Cmtf_Break;
+                           (ApiAst.Cmtf_Doc
+                              " @param user_data The user data pointer passed to ");
+                           (ApiAst.Cmtf_Var [(ApiAst.Var_LName new)]);
+                           (ApiAst.Cmtf_Doc " in options.")]),
+                      (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void), log_cb,
+                         [(ApiAst.Param ((ApiAst.Ty_UName LOG_LEVEL), level));
+                           (ApiAst.Param ((ApiAst.Ty_LName string), file));
+                           (ApiAst.Param ((ApiAst.Ty_LName uint32_t), line));
+                           (ApiAst.Param ((ApiAst.Ty_LName string), func));
+                           (ApiAst.Param ((ApiAst.Ty_LName string), message));
+                           (ApiAst.Param ((ApiAst.Ty_TVar any), user_data))]
+                         ))
+                      ));
                    (ApiAst.Decl_Static
                       (ApiAst.Decl_Class (options,
                          [(ApiAst.Decl_Comment (
@@ -651,15 +1220,17 @@
                                   (ApiAst.Cmtf_Doc " incompatible.");
                                   ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
                                   (ApiAst.Cmtf_Doc
-                                     " The memory layout of this struct (size, alignment, and field order) is not");
+                                     " @deprecated The memory layout of this struct (size, alignment, and field");
                                   ApiAst.Cmtf_Break;
                                   (ApiAst.Cmtf_Doc
-                                     " part of the ABI. To remain compatible, prefer to use ");
+                                     " order) is not part of the ABI. To remain compatible, prefer to use ");
                                   (ApiAst.Cmtf_Var [(ApiAst.Var_LName new)]);
-                                  (ApiAst.Cmtf_Doc " to allocate the");
+                                  (ApiAst.Cmtf_Doc " to"); ApiAst.Cmtf_Break;
+                                  (ApiAst.Cmtf_Doc
+                                     " allocate the object and accessor functions to set the members. The struct");
                                   ApiAst.Cmtf_Break;
                                   (ApiAst.Cmtf_Doc
-                                     " object and accessor functions to set the members.")
+                                     " will become opaque (i.e. the definition will become private) in v0.1.0.")
                                   ]),
                              (ApiAst.Decl_Struct (this, [get; set],
                                 [(ApiAst.Decl_Comment (
@@ -867,6 +1438,16 @@
                                         (ApiAst.Ty_LName uint16_t), tcp_port
                                         ))
                                      ));
+                                  (ApiAst.Decl_Comment (
+                                     (ApiAst.Cmt_Doc
+                                        [ApiAst.Cmtf_Break;
+                                          (ApiAst.Cmtf_Doc
+                                             " Enables or disables UDP hole-punching in toxcore. (Default: enabled).")
+                                          ]),
+                                     (ApiAst.Decl_Member (
+                                        (ApiAst.Ty_LName bool),
+                                        hole_punching_enabled))
+                                     ));
                                   (ApiAst.Decl_Namespace (savedata,
                                      [(ApiAst.Decl_Comment (
                                          (ApiAst.Cmt_Doc
@@ -908,6 +1489,58 @@
                                                (ApiAst.Cmtf_Doc " array.")]),
                                           (ApiAst.Decl_Member (
                                              (ApiAst.Ty_LName size_t), length
+                                             ))
+                                          ))
+                                       ]
+                                     ));
+                                  (ApiAst.Decl_Namespace (log,
+                                     [(ApiAst.Decl_Comment (
+                                         (ApiAst.Cmt_Doc
+                                            [ApiAst.Cmtf_Break;
+                                              (ApiAst.Cmtf_Doc
+                                                 " Logging callback for the new tox instance.")
+                                              ]),
+                                         (ApiAst.Decl_Member (
+                                            (ApiAst.Ty_Pointer
+                                               (ApiAst.Ty_LName log_cb)),
+                                            callback))
+                                         ));
+                                       (ApiAst.Decl_Comment (
+                                          (ApiAst.Cmt_Doc
+                                             [ApiAst.Cmtf_Break;
+                                               (ApiAst.Cmtf_Doc
+                                                  " User data pointer passed to the logging callback.")
+                                               ]),
+                                          (ApiAst.Decl_Member (
+                                             (ApiAst.Ty_TVar any), user_data
+                                             ))
+                                          ))
+                                       ]
+                                     ));
+                                  (ApiAst.Decl_Namespace (load,
+                                     [(ApiAst.Decl_Comment (
+                                         (ApiAst.Cmt_Doc
+                                            [ApiAst.Cmtf_Break;
+                                              (ApiAst.Cmtf_Doc
+                                                 " An implementation of the loader interface specified in ");
+                                              (ApiAst.Cmtf_Var
+                                                 [(ApiAst.Var_LName loader_t)
+                                                   ]);
+                                              (ApiAst.Cmtf_Doc ".")]),
+                                         (ApiAst.Decl_Member (
+                                            (ApiAst.Ty_Const
+                                               (ApiAst.Ty_Pointer
+                                                  (ApiAst.Ty_LName loader_t))),
+                                            callbacks))
+                                         ));
+                                       (ApiAst.Decl_Comment (
+                                          (ApiAst.Cmt_Doc
+                                             [ApiAst.Cmtf_Break;
+                                               (ApiAst.Cmtf_Doc
+                                                  " User data pointer passed to each of the loader callbacks.")
+                                               ]),
+                                          (ApiAst.Decl_Member (
+                                             (ApiAst.Ty_TVar any), user_data
                                              ))
                                           ))
                                        ]
@@ -969,17 +1602,7 @@
                               (ApiAst.Decl_Static
                                  (ApiAst.Decl_Function (
                                     (ApiAst.Ty_Pointer (ApiAst.Ty_LName this)),
-                                    new, [],
-                                    (ApiAst.Err_List
-                                       [(ApiAst.Enum_Name (
-                                           (ApiAst.Cmt_Doc
-                                              [ApiAst.Cmtf_Break;
-                                                (ApiAst.Cmtf_Doc
-                                                   " The function failed to allocate enough memory for the options struct.")
-                                                ]),
-                                           MALLOC, None))
-                                         ])
-                                    )))
+                                    new, [], (ApiAst.Err_From alloc))))
                               ));
                            (ApiAst.Decl_Comment (
                               (ApiAst.Cmt_Doc
@@ -1150,164 +1773,6 @@
                            ]),
                       (ApiAst.Decl_Function ((ApiAst.Ty_LName void), kill,
                          [], ApiAst.Err_None))
-                      ));
-                   (ApiAst.Decl_Comment (
-                      (ApiAst.Cmt_Doc
-                         [ApiAst.Cmtf_Break;
-                           (ApiAst.Cmtf_Doc
-                              " Severity level of log messages.")
-                           ]),
-                      (ApiAst.Decl_Enum (ApiAst.Enum_Class, LOG_LEVEL,
-                         [(ApiAst.Enum_Name (
-                             (ApiAst.Cmt_Doc
-                                [ApiAst.Cmtf_Break;
-                                  (ApiAst.Cmtf_Doc
-                                     " Very detailed traces including all network activity.")
-                                  ]),
-                             LOG_TRACE, None));
-                           (ApiAst.Enum_Name (
-                              (ApiAst.Cmt_Doc
-                                 [ApiAst.Cmtf_Break;
-                                   (ApiAst.Cmtf_Doc
-                                      " Debug messages such as which port we bind to.")
-                                   ]),
-                              LOG_DEBUG, None));
-                           (ApiAst.Enum_Name (
-                              (ApiAst.Cmt_Doc
-                                 [ApiAst.Cmtf_Break;
-                                   (ApiAst.Cmtf_Doc
-                                      " Informational log messages such as video call status changes.")
-                                   ]),
-                              LOG_INFO, None));
-                           (ApiAst.Enum_Name (
-                              (ApiAst.Cmt_Doc
-                                 [ApiAst.Cmtf_Break;
-                                   (ApiAst.Cmtf_Doc
-                                      " Warnings about internal inconsistency or logic errors.")
-                                   ]),
-                              LOG_WARNING, None));
-                           (ApiAst.Enum_Name (
-                              (ApiAst.Cmt_Doc
-                                 [ApiAst.Cmtf_Break;
-                                   (ApiAst.Cmtf_Doc
-                                      " Severe unexpected errors caused by external or internal inconsistency.")
-                                   ]),
-                              LOG_ERROR, None))
-                           ]
-                         ))
-                      ));
-                   (ApiAst.Decl_Comment (
-                      (ApiAst.Cmt_Doc
-                         [ApiAst.Cmtf_Break;
-                           (ApiAst.Cmtf_Doc
-                              " This event is triggered when the toxcore library logs an internal message.");
-                           ApiAst.Cmtf_Break;
-                           (ApiAst.Cmtf_Doc
-                              " This is mostly useful for debugging. This callback can be called from any");
-                           ApiAst.Cmtf_Break;
-                           (ApiAst.Cmtf_Doc " function, not just ");
-                           (ApiAst.Cmtf_Var [(ApiAst.Var_LName iterate)]);
-                           (ApiAst.Cmtf_Doc
-                              ". This means the user data lifetime must at");
-                           ApiAst.Cmtf_Break;
-                           (ApiAst.Cmtf_Doc
-                              " least extend between registering and unregistering it or ");
-                           (ApiAst.Cmtf_Var [(ApiAst.Var_LName kill)]);
-                           (ApiAst.Cmtf_Doc "."); ApiAst.Cmtf_Break;
-                           ApiAst.Cmtf_Break;
-                           (ApiAst.Cmtf_Doc
-                              " Other toxcore modules such as toxav may concurrently call this callback at");
-                           ApiAst.Cmtf_Break;
-                           (ApiAst.Cmtf_Doc
-                              " any time. Thus, user code must make sure it is equipped to handle concurrent");
-                           ApiAst.Cmtf_Break;
-                           (ApiAst.Cmtf_Doc
-                              " execution, e.g. by employing appropriate mutex locking. The callback");
-                           ApiAst.Cmtf_Break;
-                           (ApiAst.Cmtf_Doc
-                              " registration function must not be called during execution of any other Tox");
-                           ApiAst.Cmtf_Break;
-                           (ApiAst.Cmtf_Doc
-                              " library function (toxcore or toxav).")
-                           ]),
-                      (ApiAst.Decl_Event (log, false,
-                         [(ApiAst.Decl_Comment (
-                             (ApiAst.Cmt_Doc
-                                [ApiAst.Cmtf_Break;
-                                  (ApiAst.Cmtf_Doc
-                                     " @param level The severity of the log message.");
-                                  ApiAst.Cmtf_Break;
-                                  (ApiAst.Cmtf_Doc
-                                     " @param file The source file from which the message originated.");
-                                  ApiAst.Cmtf_Break;
-                                  (ApiAst.Cmtf_Doc
-                                     " @param line The source line from which the message originated.");
-                                  ApiAst.Cmtf_Break;
-                                  (ApiAst.Cmtf_Doc
-                                     " @param func The function from which the message originated.");
-                                  ApiAst.Cmtf_Break;
-                                  (ApiAst.Cmtf_Doc
-                                     " @param message The log message.")
-                                  ]),
-                             (ApiAst.Decl_Typedef ((ApiAst.Ty_LName void),
-                                cb,
-                                [(ApiAst.Param ((ApiAst.Ty_UName LOG_LEVEL),
-                                    level));
-                                  (ApiAst.Param ((ApiAst.Ty_LName string),
-                                     file));
-                                  (ApiAst.Param ((ApiAst.Ty_LName uint32_t),
-                                     line));
-                                  (ApiAst.Param ((ApiAst.Ty_LName string),
-                                     func));
-                                  (ApiAst.Param ((ApiAst.Ty_LName string),
-                                     message))
-                                  ]
-                                ))
-                             ))
-                           ]
-                         ))
-                      ));
-                   (ApiAst.Decl_GetSet (
-                      (ApiAst.Ty_Array ((ApiAst.Ty_LName uint8_t),
-                         (ApiAst.Ss_LName size))),
-                      savedata,
-                      [(ApiAst.Decl_Comment (
-                          (ApiAst.Cmt_Doc
-                             [ApiAst.Cmtf_Break;
-                               (ApiAst.Cmtf_Doc
-                                  " Calculates the number of bytes required to store the tox instance with");
-                               ApiAst.Cmtf_Break; (ApiAst.Cmtf_Doc " ");
-                               (ApiAst.Cmtf_Var [(ApiAst.Var_LName get)]);
-                               (ApiAst.Cmtf_Doc
-                                  ". This function cannot fail. The result is always greater than 0.");
-                               ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
-                               (ApiAst.Cmtf_Doc
-                                  " @see threading for concurrency implications.")
-                               ]),
-                          (ApiAst.Decl_Function (ApiAst.Ty_Auto, size, 
-                             [], ApiAst.Err_None))
-                          ));
-                        (ApiAst.Decl_Comment (
-                           (ApiAst.Cmt_Doc
-                              [ApiAst.Cmtf_Break;
-                                (ApiAst.Cmtf_Doc
-                                   " Store all information associated with the tox instance to a byte array.");
-                                ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
-                                (ApiAst.Cmtf_Doc
-                                   " @param savedata A memory region large enough to store the tox instance");
-                                ApiAst.Cmtf_Break;
-                                (ApiAst.Cmtf_Doc "   data. Call ");
-                                (ApiAst.Cmtf_Var [(ApiAst.Var_LName size)]);
-                                (ApiAst.Cmtf_Doc
-                                   " to find the number of bytes required. If this parameter");
-                                ApiAst.Cmtf_Break;
-                                (ApiAst.Cmtf_Doc
-                                   "   is NULL, this function has no effect.")
-                                ]),
-                           (ApiAst.Decl_Function (ApiAst.Ty_Auto, get, 
-                              [], ApiAst.Err_None))
-                           ))
-                        ]
                       ));
                    (ApiAst.Decl_Section
                       [ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
@@ -1608,7 +2073,13 @@
                                   (ApiAst.Cmt_Doc
                                      [ApiAst.Cmtf_Break;
                                        (ApiAst.Cmtf_Doc
-                                          " Set the 4-byte nospam part of the address.");
+                                          " Set the 4-byte nospam part of the address. This value is expected in host");
+                                       ApiAst.Cmtf_Break;
+                                       (ApiAst.Cmtf_Doc
+                                          " byte order. I.e. 0x12345678 will form the bytes [12, 34, 56, 78] in the");
+                                       ApiAst.Cmtf_Break;
+                                       (ApiAst.Cmtf_Doc
+                                          " nospam part of the Tox friend address.");
                                        ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
                                        (ApiAst.Cmtf_Doc
                                           " @param nospam Any 32 bit unsigned integer.")
@@ -1620,8 +2091,9 @@
                                    (ApiAst.Cmt_Doc
                                       [ApiAst.Cmtf_Break;
                                         (ApiAst.Cmtf_Doc
-                                           " Get the 4-byte nospam part of the address.")
-                                        ]),
+                                           " Get the 4-byte nospam part of the address. This value is returned in host");
+                                        ApiAst.Cmtf_Break;
+                                        (ApiAst.Cmtf_Doc " byte order.")]),
                                    (ApiAst.Decl_Function (ApiAst.Ty_Auto,
                                       get, [], ApiAst.Err_None))
                                    ))
@@ -3040,21 +3512,6 @@
                                          " @param public_key The Public Key of the user who sent the friend request.");
                                       ApiAst.Cmtf_Break;
                                       (ApiAst.Cmtf_Doc
-                                         " @param time_delta A delta in seconds between when the message was composed");
-                                      ApiAst.Cmtf_Break;
-                                      (ApiAst.Cmtf_Doc
-                                         "   and when it is being transmitted. For messages that are sent immediately,");
-                                      ApiAst.Cmtf_Break;
-                                      (ApiAst.Cmtf_Doc
-                                         "   it will be 0. If a message was written and couldn't be sent immediately");
-                                      ApiAst.Cmtf_Break;
-                                      (ApiAst.Cmtf_Doc
-                                         "   (due to a connection failure, for example), the time_delta is an");
-                                      ApiAst.Cmtf_Break;
-                                      (ApiAst.Cmtf_Doc
-                                         "   approximation of when it was composed.");
-                                      ApiAst.Cmtf_Break;
-                                      (ApiAst.Cmtf_Doc
                                          " @param message The message they sent along with the request.");
                                       ApiAst.Cmtf_Break;
                                       (ApiAst.Cmtf_Doc
@@ -3098,20 +3555,10 @@
                                           " @param friend_number The friend number of the friend who sent the message.");
                                        ApiAst.Cmtf_Break;
                                        (ApiAst.Cmtf_Doc
-                                          " @param time_delta Time between composition and sending.");
-                                       ApiAst.Cmtf_Break;
-                                       (ApiAst.Cmtf_Doc
                                           " @param message The message data they sent.");
                                        ApiAst.Cmtf_Break;
                                        (ApiAst.Cmtf_Doc
-                                          " @param length The size of the message byte array.");
-                                       ApiAst.Cmtf_Break; ApiAst.Cmtf_Break;
-                                       (ApiAst.Cmtf_Doc " @see ");
-                                       (ApiAst.Cmtf_Var
-                                          [ApiAst.Var_Event;
-                                            (ApiAst.Var_LName request)]);
-                                       (ApiAst.Cmtf_Doc
-                                          " for more information on time_delta.")
+                                          " @param length The size of the message byte array.")
                                        ]),
                                   (ApiAst.Decl_Typedef (
                                      (ApiAst.Ty_LName void), cb,
