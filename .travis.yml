@@ -19,3 +19,10 @@ install:
 script:
   - make
   - make -C src coverage
+
+branches:
+  only:
+  - master
+
+git:
+  depth: 1
