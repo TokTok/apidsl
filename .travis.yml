@@ -14,7 +14,8 @@ cache:
 install:
   - opam init -y
   - eval `opam config env`
-  - opam install -y ppx_deriving menhir
+  - opam install -y menhir oasis ppx_deriving ppx_driver 
+  - (cd src && oasis setup)
 
 script:
   - make
