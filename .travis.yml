@@ -1,25 +1,39 @@
 language: generic
 
-addons:
-  apt:
-    sources:
-      - avsm
-    packages:
-      - opam
+matrix:
+  include:
+  - env: BUILD=host
+    addons:
+      apt:
+        sources:
+        - avsm
+        packages:
+        - opam
 
-cache:
-  directories:
-    - $HOME/.opam
+    cache:
+      directories:
+      - $HOME/.opam
 
-install:
-  - opam init -y
-  - eval `opam config env`
-  - opam install -y menhir oasis ppx_deriving ppx_driver 
-  - (cd src && oasis setup)
+    install:
+    - opam init -y
+    - eval `opam config env`
+    - opam install -y menhir oasis ppx_deriving ppx_driver 
+    - (cd src && oasis setup)
 
-script:
-  - make
-  - make -C src coverage
+    script:
+    - make
+    - make -C src coverage
+
+  - env: BUILD=docker
+    services:
+    - docker
+    script:
+    - docker build -t apidsl .
+    - docker run --rm -v $PWD:/apidsl apidsl
+    - make tests
+
+  allow_failures:
+  - env: BUILD=docker
 
 branches:
   only:
