@@ -7,7 +7,7 @@ RUN apt-get update && \
       m4 \
       make \
       opam && \
-    rm -rf /var/lib/apt/lists/* \
+    rm -rf /var/lib/apt/lists/* && \
     wget http://caml.inria.fr/pub/distrib/ocaml-4.03/ocaml-4.03.0.tar.gz && \
     tar -xzf ocaml* && \
     cd ocaml* && \

@@ -32,9 +32,6 @@ matrix:
     - docker run --rm -v $PWD:/apidsl apidsl
     - make tests
 
-  allow_failures:
-  - env: BUILD=docker
-
 branches:
   only:
   - master
