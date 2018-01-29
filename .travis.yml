@@ -8,6 +8,7 @@ matrix:
         sources:
         - avsm
         packages:
+        - aspcud
         - opam
 
     cache:
