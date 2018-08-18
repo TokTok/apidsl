@@ -73,6 +73,13 @@ module Codegen(P : Params) = struct
         else
           Format.fprintf fmt "${%a}"
             (cg_list ~sep:"." cg_var) var
+    | Cmtf_Doxygen (kind, None) ->
+        Format.fprintf fmt "@%s"
+          kind
+    | Cmtf_Doxygen (kind, Some lname) ->
+        Format.fprintf fmt "@%s %a"
+          kind
+          cg_lname lname
     | Cmtf_Break ->
         Format.fprintf fmt "@, *"
 

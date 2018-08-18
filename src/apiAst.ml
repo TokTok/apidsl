@@ -16,6 +16,7 @@ type 'id comment_fragment =
   | Cmtf_UName of 'id uname
   | Cmtf_LName of 'id lname
   | Cmtf_Var of 'id var list
+  | Cmtf_Doxygen of string * 'id lname option
   | Cmtf_Break
   [@@deriving show]
 

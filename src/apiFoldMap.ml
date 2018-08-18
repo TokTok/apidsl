@@ -29,6 +29,13 @@ let visit_list f v state l =
   state, List.rev l
 
 
+let visit_option f v state = function
+  | None -> state, None
+  | Some x ->
+      let state, x = f v state x in
+      state, Some x
+
+
 let visit_uname v state = function
   | name -> state, name
 
@@ -62,6 +69,9 @@ let visit_comment_fragment v state = function
   | Cmtf_Var var ->
       let state, var = visit_list v.fold_var v state var in
       state, Cmtf_Var var
+  | Cmtf_Doxygen (kind, lname) ->
+      let state, lname = visit_option v.fold_lname v state lname in
+      state, Cmtf_Doxygen (kind, lname)
   | Cmtf_Break ->
       state, Cmtf_Break
 
