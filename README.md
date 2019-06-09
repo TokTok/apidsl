@@ -56,10 +56,12 @@ docker run --rm -v $PWD:/apidsl apidsl
 ls -lbh apigen.native
 # Copy it over to /usr/local/bin
 sudo cp ./apigen.native /usr/local/bin/
+
+# Optional Cleanup
 # Delete the image we have built
 docker rmi apidsl debian:jessie-slim
-# Make sure there are no containers or images left, as
-# they take a lot of disk space and are not needed anymore
+# Make sure no related containers or images are left.
+# They may use a lot of disk space.
 docker ps -a
 docker images -a
 ```
