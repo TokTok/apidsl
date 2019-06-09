@@ -48,20 +48,20 @@ grab a cup of coffee/tea in the meantime.
 git clone https://github.com/TokTok/apidsl
 cd apidsl
 # Build "apidsl" Docker image based on Dockerfile instructions
-sudo docker build -t apidsl .
+docker build -t apidsl .
 # Run the image, i.e. execute the CMD part of the Dockerfile, mounting the
 # current directory (the APIDSL repository) as /apidsl inside the image
-sudo docker run --rm -v $PWD:/apidsl apidsl
+docker run --rm -v $PWD:/apidsl apidsl
 # Make sure apigen.native has appeared in the current directory
 ls -lbh apigen.native
 # Copy it over to /usr/local/bin
 sudo cp ./apigen.native /usr/local/bin/
 # Delete the image we have built
-sudo docker rmi apidsl debian:jessie-slim
+docker rmi apidsl debian:jessie-slim
 # Make sure there are no containers or images left, as
 # they take a lot of disk space and are not needed anymore
-sudo docker ps -a
-sudo docker images -a
+docker ps -a
+docker images -a
 ```
 
 You should now have `/usr/local/bin/apigen.native`.
