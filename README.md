@@ -16,15 +16,15 @@ will attempt to install these if they are not yet installed.
 
 #### Installing dependencies:
 
-Make sure to configure **OPAM** by running ``opam init``. (Depending on your
-configuration you might also need to run ``eval `opam config env` ``).  Running
-``opam install ocamlfind ppx_deriving menhir`` should install all dependencies
+Make sure to configure **OPAM** by running `opam init`. (Depending on your
+configuration you might also need to run `` eval `opam config env` ``). Running
+`opam install ocamlfind ppx_deriving menhir` should install all dependencies
 required for APIDSL.
 
 #### Compiling
 
-Just run ``make`` in APIDSL's root directory. The apidsl binary can be found
-under ``./_build/apigen.native``
+Just run `make` in APIDSL's root directory. The apidsl binary can be found
+under `./_build/apigen.native`
 
 ### Docker
 
@@ -59,7 +59,7 @@ sudo cp ./apigen.native /usr/local/bin/
 
 # Optional Cleanup
 # Delete the image we have built
-docker rmi apidsl debian:jessie-slim
+docker rmi apidsl ocaml/opam:alpine-3.15-ocaml-4.13-flambda-fp
 # Make sure no related containers or images are left.
 # They may use a lot of disk space.
 docker ps -a
