@@ -59,7 +59,7 @@ sudo cp ./apigen.native /usr/local/bin/
 
 # Optional Cleanup
 # Delete the image we have built
-docker rmi apidsl debian:jessie-slim
+docker rmi apidsl debian:buster-slim
 # Make sure no related containers or images are left.
 # They may use a lot of disk space.
 docker ps -a
