@@ -1,4 +1,5 @@
 /_build
+/src/.merlin
 /setup.data
 /setup.log
 *.byte

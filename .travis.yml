@@ -1,7 +1,8 @@
 ---
 language: generic
+os: linux
 
-matrix:
+jobs:
   include:
     - env: BUILD=host
       addons:
@@ -18,13 +19,12 @@ matrix:
 
       install:
         - opam init -y
-        - eval `opam config env`
-        - opam install -y menhir oasis ppx_deriving ppx_driver
-        - (cd src && oasis setup)
+        - eval `opam env`
+        - opam install -y menhir ppx_deriving dune
 
       script:
         - make
-        - make -C src coverage
+#        - make coverage
 
     - env: BUILD=docker
       services:
@@ -32,4 +32,4 @@ matrix:
       script:
         - docker build -t apidsl .
         - docker run --rm -v $PWD:/apidsl apidsl
-        - make tests
+#        - make tests

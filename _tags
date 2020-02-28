@@ -1,7 +1,0 @@
-true: use_menhir
-true: annot
-true: bin_annot
-<*/*.{native,byte,ml,mli}>: package(ppx_deriving.std), package(menhirLib), package(str)
-
-".": -include
-"src": include
