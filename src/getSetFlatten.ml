@@ -18,7 +18,7 @@ let v = { default with fold_decl }
 
 
 let transform (symtab, decls) =
-  let state, decls =
+  let _, decls =
     ReplaceDecl.fold_decls v (ReplaceDecl.initial, ()) decls
   in
   symtab, decls

@@ -22,13 +22,13 @@ let visit_list f v state l =
   List.map (f v state) l
 
 
-let visit_uname v state = function
+let visit_uname _ _ = function
   | name -> name
 
-let visit_lname v state = function
+let visit_lname _ _ = function
   | name -> name
 
-let visit_macro v state = function
+let visit_macro _ _ = function
   | Macro macro -> Macro macro
 
 

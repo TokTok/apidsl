@@ -75,7 +75,7 @@ let cg_comment style fmt = function
 ;;
 
 
-let rec cg_size_spec fmt = function
+let cg_size_spec fmt = function
   | Ss_UName uname ->
       Format.fprintf fmt "%a"
         cg_uname uname
@@ -222,7 +222,7 @@ let rec cg_decl_qualified qualifier fmt = function
         qualifier
         cg_lname lname
         (cg_indented cg_decls) decls
-  | Decl_Function (type_name, lname, parameters, error_list) ->
+  | Decl_Function (type_name, lname, parameters, _) ->
       Format.fprintf fmt "@,--foreign import ccall %s%a :: %a"
         qualifier
         cg_lname lname
@@ -232,9 +232,8 @@ let rec cg_decl_qualified qualifier fmt = function
       Format.fprintf fmt "@,--const %a = %a"
         cg_uname uname
         cg_expr expr
-  | Decl_Enum (kind, uname, enumerators) ->
+  | Decl_Enum (_, uname, enumerators) ->
       assert (qualifier = "");
-      let is_class = kind = Enum_Class in
       Format.fprintf fmt "@,data %a %aderiving (Eq, Ord, Enum, Bounded, Read, Show)"
         cg_uname uname
         (cg_indented cg_enumerators) enumerators
@@ -245,7 +244,6 @@ let rec cg_decl_qualified qualifier fmt = function
         (cg_indented cg_enumerators) enumerators
   | Decl_Struct (lname, attrs, []) ->
       assert (qualifier = "");
-      let uname = String.uppercase lname in
       Format.fprintf fmt "@,--struct %a%a"
         cg_lname lname
         cg_attrs attrs
@@ -290,13 +288,13 @@ let rec cg_decl_qualified qualifier fmt = function
         (cg_decl_qualified "static ") decl
   | Decl_Section frags ->
       Format.fprintf fmt "@,@,";
-      for i = 0 to 79 do
+      for _ = 0 to 79 do
         Format.pp_print_char fmt '-'
       done;
       Format.fprintf fmt "%a"
         (cg_list cg_comment_fragment) frags;
       Format.fprintf fmt "@,";
-      for i = 0 to 79 do
+      for _ = 0 to 79 do
         Format.pp_print_char fmt '-'
       done;
       Format.fprintf fmt "@,@,";

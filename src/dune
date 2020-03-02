@@ -1,8 +1,8 @@
-(executable
- (name apigen)
- (libraries str menhirLib)
- (preprocess (pps ppx_deriving.std)))
+(library
+  (name apidsl)
+  (libraries str menhirLib)
+  (preprocess (pps ppx_deriving.std bisect_ppx -conditional)))
 (ocamllex apiLexer)
 (menhir
- (modules apiParser)
- (flags --table))
+  (modules apiParser)
+  (flags --table))

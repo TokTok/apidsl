@@ -3,7 +3,7 @@ open ApiFold
 
 
 let rec rename_symbols name symtab = function
-  | Decl_Comment (comment, decl) ->
+  | Decl_Comment (_, decl) ->
       rename_symbols name symtab decl
 
   | Decl_Function (_, fname, _, _) as decl ->
@@ -45,7 +45,7 @@ let rec rename_symbols name symtab = function
       end
 
   | Decl_Error (uname, _) ->
-      let name = String.uppercase @@ SymbolTable.name symtab name in
+      let name = String.uppercase_ascii @@ SymbolTable.name symtab name in
 
       SymbolTable.rename uname
         (fun error_name ->
@@ -60,7 +60,7 @@ let rec rename_symbols name symtab = function
 
 
 let fold_decl v symtab = function
-  | Decl_GetSet (type_name, lname, decls) ->
+  | Decl_GetSet (_, lname, decls) ->
       List.fold_left (rename_symbols lname) symtab decls
 
   | decl ->

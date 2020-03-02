@@ -1,7 +1,12 @@
 /_build
-/src/.merlin
+/_coverage
+/coverage.json
 /setup.data
 /setup.log
+/test/*/dune
+.merlin
 *.byte
+*.exe
 *.native
 *.swp
+bisect*.out

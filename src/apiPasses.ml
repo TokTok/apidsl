@@ -7,7 +7,7 @@ import           Foreign.Ptr               (FunPtr, Ptr)
 "
 
 
-let pass msg f x =
+let pass _ f x =
   (*print_endline msg;*)
   f x
 
@@ -127,7 +127,7 @@ let haskell modname api =
   Format.flush_str_formatter ()
 
 
-let format_error (token, start_p, end_p) =
+let format_error (token, start_p, _) =
   let open Lexing in
   Printf.sprintf "%s:%d:%d: error at %s"
     start_p.pos_fname
@@ -143,22 +143,7 @@ let lex state lexbuf =
   (token, start_p, end_p)
 
 
-let rec parse state lexbuf last_input = let open ApiParser.MenhirInterpreter in
-  function
-  | InputNeeded env as checkpoint ->
-      let last_input = lex state lexbuf in
-      parse state lexbuf (Some last_input) (offer checkpoint last_input)
-  | Shifting _
-  | AboutToReduce _ as checkpoint ->
-      parse state lexbuf last_input (resume checkpoint)
-  | HandlingError env ->
-      handle_error state lexbuf last_input env
-  | Accepted result ->
-      result
-  | Rejected ->
-      failwith "rejected"
-
-and handle_error state lexbuf last_input env = let open ApiParser.MenhirInterpreter in
+let handle_error last_input =
   match last_input with
   | None ->
       failwith "error at <epsilon>"
@@ -166,6 +151,37 @@ and handle_error state lexbuf last_input env = let open ApiParser.MenhirInterpre
       failwith (format_error last_input)
 
 
+let rec parse state lexbuf last_input = let open ApiParser.MenhirInterpreter in
+  function
+  | InputNeeded _ as checkpoint ->
+      let last_input = lex state lexbuf in
+      parse state lexbuf (Some last_input) (offer checkpoint last_input)
+  | Shifting _
+  | AboutToReduce _ as checkpoint ->
+      parse state lexbuf last_input (resume checkpoint)
+  | HandlingError _ ->
+      handle_error last_input
+  | Accepted result ->
+      result
+  | Rejected ->
+      failwith "rejected"
+
+
 let parse_lexbuf lexbuf =
   let state = ApiLexer.state () in
   parse state lexbuf None (ApiParser.Incremental.parse_api Lexing.dummy_pos)
+
+
+let parse_file file =
+  let fh = open_in file in
+  let lexbuf = Lexing.from_channel fh in
+  lexbuf.Lexing.lex_curr_p <- Lexing.({
+      lexbuf.lex_curr_p with
+      pos_fname = file;
+    });
+
+  let api = parse_lexbuf lexbuf in
+
+  close_in fh;
+
+  api

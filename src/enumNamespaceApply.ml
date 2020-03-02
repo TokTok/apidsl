@@ -14,7 +14,7 @@ let resolve_ns symtab ns =
 
 
 let fold_enumerator v (symtab, ns) = function
-  | Enum_Name (comment, uname, value) ->
+  | Enum_Name (_, uname, _) ->
       let symtab =
         SymbolTable.rename uname
           (prepend_ns (resolve_ns symtab ns)) symtab

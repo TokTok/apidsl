@@ -22,14 +22,14 @@ let visit_list f v state l =
   List.fold_left (f v) state l
 
 
-let visit_uname v state = function
-  | name -> state
+let visit_uname _ state = function
+  | _ -> state
 
-let visit_lname v state = function
-  | name -> state
+let visit_lname _ state = function
+  | _ -> state
 
-let visit_macro v state = function
-  | Macro macro -> state
+let visit_macro _ state = function
+  | Macro _ -> state
 
 
 let visit_var v state = function
@@ -44,7 +44,7 @@ let visit_var v state = function
 
 
 let visit_comment_fragment v state = function
-  | Cmtf_Doc doc ->
+  | Cmtf_Doc _ ->
       state
   | Cmtf_UName uname ->
       let state = v.fold_uname v state uname in
@@ -105,7 +105,7 @@ let visit_type_name v state = function
 
 
 let visit_enumerator v state = function
-  | Enum_Name (comment, uname, value) ->
+  | Enum_Name (comment, uname, _) ->
       let state = v.fold_comment v state comment in
       let state = v.fold_uname v state uname in
       state
@@ -134,7 +134,7 @@ let visit_parameter v state = function
 
 
 let visit_expr v state = function
-  | E_Number num ->
+  | E_Number _ ->
       state
   | E_UName uname ->
       let state = v.fold_uname v state uname in
@@ -180,7 +180,7 @@ let visit_decl v state = function
       let state = v.fold_uname v state uname in
       let state = v.fold_expr v state expr in
       state
-  | Decl_Enum (is_class, uname, enumerators) ->
+  | Decl_Enum (_, uname, enumerators) ->
       let state = v.fold_uname v state uname in
       let state = visit_list v.fold_enumerator v state enumerators in
       state
@@ -207,7 +207,7 @@ let visit_decl v state = function
       let state = v.fold_lname v state lname in
       let state = visit_list v.fold_parameter v state parameters in
       state
-  | Decl_Event (lname, is_const, decl) ->
+  | Decl_Event (lname, _, decl) ->
       let state = v.fold_lname v state lname in
       let state = visit_list v.fold_decl v state decl in
       state

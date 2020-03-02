@@ -3,7 +3,7 @@ open ApiFold
 
 
 let fold_decl v symtab = function
-  | Decl_Struct (lname, attrs, decls) as decl ->
+  | Decl_Struct (lname, _, _) as decl ->
       let symtab =
         SymbolTable.rename lname
           (fun name ->
@@ -12,12 +12,12 @@ let fold_decl v symtab = function
       in
       visit_decl v symtab decl
 
-  | Decl_Member (type_name, lname) ->
+  | Decl_Member (_, lname) ->
       SymbolTable.rename lname
         (fun name ->
            match Str.split (Str.regexp "_") name with
            | [] -> name
-           | x :: xs -> x ^ String.concat "" (List.map String.capitalize xs))
+           | x :: xs -> x ^ String.concat "" (List.map String.capitalize_ascii xs))
         symtab
 
   | decl ->

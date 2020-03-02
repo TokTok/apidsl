@@ -29,13 +29,13 @@ let visit_list f v state l =
   state, List.rev l
 
 
-let visit_uname v state = function
+let visit_uname _ state = function
   | name -> state, name
 
-let visit_lname v state = function
+let visit_lname _ state = function
   | name -> state, name
 
-let visit_macro v state = function
+let visit_macro _ state = function
   | Macro macro -> state, Macro macro
 
 

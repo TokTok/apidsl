@@ -2,34 +2,22 @@
 language: generic
 os: linux
 
-jobs:
-  include:
-    - env: BUILD=host
-      addons:
-        apt:
-          sources:
-            - avsm
-          packages:
-            - aspcud
-            - opam
+addons:
+  apt:
+    sources:
+      - avsm
+    packages:
+      - aspcud
+      - opam
 
-      cache:
-        directories:
-          - $HOME/.opam
+cache:
+  directories:
+    - $HOME/.opam
 
-      install:
-        - opam init -y
-        - eval `opam env`
-        - opam install -y menhir ppx_deriving dune
+install:
+  - opam init -y
+  - eval `opam env`
+  - opam install -y menhir ppx_deriving bisect_ppx dune
 
-      script:
-        - make
-#        - make coverage
-
-    - env: BUILD=docker
-      services:
-        - docker
-      script:
-        - docker build -t apidsl .
-        - docker run --rm -v $PWD:/apidsl apidsl
-#        - make tests
+script:
+  - make coveralls

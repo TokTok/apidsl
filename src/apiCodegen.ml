@@ -87,7 +87,7 @@ module Codegen(P : Params) = struct
   ;;
 
 
-  let rec cg_size_spec fmt = function
+  let cg_size_spec fmt = function
     | Ss_UName uname ->
         Format.fprintf fmt "%a"
           cg_uname uname
@@ -110,7 +110,7 @@ module Codegen(P : Params) = struct
           cg_uname uname
     | Ty_LName lname ->
         if String.contains lname '_' &&
-           Char.uppercase lname.[0] = lname.[0] then
+           Char.uppercase_ascii lname.[0] = lname.[0] then
           Format.fprintf fmt "struct ";
         Format.fprintf fmt "%a "
           cg_lname lname
@@ -277,7 +277,7 @@ module Codegen(P : Params) = struct
           (cg_braced cg_enumerators) enumerators
     | Decl_Struct (lname, attrs, []) ->
         assert (qualifier = "");
-        let uname = String.uppercase lname in
+        let uname = String.uppercase_ascii lname in
         if c_mode then (
           Format.fprintf fmt "@,#ifndef %a_DEFINED"
             cg_uname uname;
@@ -333,13 +333,13 @@ module Codegen(P : Params) = struct
           (cg_decl_qualified "static ") decl
     | Decl_Section frags ->
         Format.fprintf fmt "@,@,/*";
-        for i = 0 to 77 do
+        for _ = 0 to 77 do
           Format.pp_print_char fmt '*'
         done;
         Format.fprintf fmt "%a"
           (cg_list cg_comment_fragment) frags;
         Format.fprintf fmt "@, ";
-        for i = 0 to 77 do
+        for _ = 0 to 77 do
           Format.pp_print_char fmt '*'
         done;
         Format.fprintf fmt "/@,@,";

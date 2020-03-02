@@ -1,35 +1,26 @@
-tests:	\
-	$(patsubst %.api.h,%.out.h,$(wildcard src/tests/*.api.h)) \
-	$(patsubst %.api.h,%.out.hs,$(wildcard src/tests/*.api.h)) \
-	$(patsubst %.api.h,%.out.api,$(wildcard src/tests/*.api.h)) \
-	$(patsubst %.api.h,%.out.ast,$(wildcard src/tests/*.api.h))
-	./apigen.exe
-
-src/tests/%.out.h: src/tests/%.api.h apigen.exe
-	-cd src && ../apigen.exe $(patsubst src/%,%,$<) > $(patsubst src/%,%,$@) 2>&1
-	diff -u src/tests/$*.exp.h $@
-	rm -f $@
-
-src/tests/%.out.hs: src/tests/%.api.h apigen.exe
-	-cd src && ../apigen.exe -hs Main $(patsubst src/%,%,$<) > $(patsubst src/%,%,$@) 2>&1
-	diff -u src/tests/$*.exp.hs $@
-	rm -f $@
-
-src/tests/%.out.api: src/tests/%.api.h apigen.exe
-	-cd src && ../apigen.exe -api $(patsubst src/%,%,$<) > $(patsubst src/%,%,$@) 2>&1
-	diff -u src/tests/$*.exp.api $@
-	rm -f $@
-
-src/tests/%.out.ast: src/tests/%.api.h apigen.exe
-	-cd src && ../apigen.exe -ast $(patsubst src/%,%,$<) > $(patsubst src/%,%,$@) 2>&1
-	diff -u src/tests/$*.exp.ast $@
-
-apigen.exe:
+apigen.native: $(wildcard *.ml* src/*.ml*)
+	dune clean
 	dune build --profile release
-	cp _build/default/src/apigen.exe $@
+	cp _build/default/apigen.exe $@
 
-coverage: travis-coveralls.sh
-	bash $<
+test/%/dune: test/dune-template Makefile
+	sed -e 's/%NAME%/$*/g' $< > $@
+
+check: $(patsubst %,%dune,$(dir $(wildcard test/*/*.api.h)))
+	dune clean
+	BISECT_ENABLE=yes dune runtest
+
+coverage: check
+	bisect-ppx-report -html _coverage/ -I _build/default _build/default/test/*/bisect*.out
+
+coveralls: check
+	bisect-ppx-report \
+		-coveralls coverage.json \
+		-service-name travis-ci \
+		-service-job-id "${TRAVIS_JOB_ID}" \
+		-I _build/default _build/default/test/*/bisect*.out
+	curl -L -F json_file=@coverage.json https://coveralls.io/api/v1/jobs
 
 clean:
 	dune clean
+	rm -f apigen.native

@@ -7,7 +7,7 @@ let fold_decl v repl = function
       let func = Decl_Static (
         Decl_Function (
           Ty_LName "uint32_t",
-          String.lowercase name,
+          String.lowercase_ascii name,
           [],
           Err_None
         )

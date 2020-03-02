@@ -1,0 +1,55 @@
+; C API
+(rule
+  (deps %NAME%.api.h)
+  (action
+    (with-outputs-to
+      %NAME%.out.h
+      (run ../../apigen.exe %NAME%.api.h))))
+
+(rule
+  (alias runtest-c)
+  (action (diff %NAME%.exp.h %NAME%.out.h)))
+
+; Haskell API
+(rule
+  (deps %NAME%.api.h)
+  (action
+    (with-outputs-to
+      %NAME%.out.hs
+      (run ../../apigen.exe -hs Main %NAME%.api.h))))
+
+(rule
+  (alias runtest-hs)
+  (action (diff %NAME%.exp.hs %NAME%.out.hs)))
+
+; AST
+(rule
+  (deps %NAME%.api.h)
+  (action
+    (with-outputs-to
+      %NAME%.out.ast
+      (run ../../apigen.exe -ast %NAME%.api.h))))
+
+(rule
+  (alias runtest-ast)
+  (action (diff %NAME%.exp.ast %NAME%.out.ast)))
+
+; API
+(rule
+  (deps %NAME%.api.h)
+  (action
+    (with-outputs-to
+      %NAME%.out.api
+      (run ../../apigen.exe -api %NAME%.api.h))))
+
+(rule
+  (alias runtest-api)
+  (action (diff %NAME%.exp.api %NAME%.out.api)))
+
+(rule
+  (alias runtest)
+  (deps (alias runtest-c)
+        (alias runtest-hs)
+        (alias runtest-ast)
+        (alias runtest-api))
+  (action (echo "Test complete: %NAME%\n")))

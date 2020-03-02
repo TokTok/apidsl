@@ -29,7 +29,7 @@ let prepend_ns ~ignore_inline ns name =
 let resolve_ns symtab ns =
   ns
   |> List.map (ns_map (SymbolTable.name symtab))
-  |> List.map (ns_map String.lowercase)
+  |> List.map (ns_map String.lowercase_ascii)
 
 
 let fold_namespace v (symtab, ignore_first, ns) name decls =
@@ -49,14 +49,14 @@ let fold_decl v (symtab, ignore_first, ns) = function
       let symtab =
         symtab
         |> (resolve_ns symtab ns
-            |> List.map (ns_map String.uppercase)
+            |> List.map (ns_map String.uppercase_ascii)
             |> prepend_ns ~ignore_inline:true
             |> SymbolTable.rename uname)
       in
 
       (symtab, ignore_first, ns)
 
-  | Decl_Struct (lname, _, decls) ->
+  | Decl_Struct (_, _, decls) ->
       (* Reset namespace for struct members. *)
       let symtab, _, _ = visit_list v.fold_decl v (symtab, ignore_first, []) decls in
       (symtab, ignore_first, ns)

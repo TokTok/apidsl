@@ -10,11 +10,11 @@ let rec string_find_from s i f =
 
 
 let make_this_name name =
-  if name = String.lowercase name then
+  if name = String.lowercase_ascii name then
     name
   else
-    let idx = string_find_from name 0 (fun c -> c = Char.uppercase c) in
-    String.lowercase @@ String.sub name idx (String.length name - idx)
+    let idx = string_find_from name 0 (fun c -> c = Char.uppercase_ascii c) in
+    String.lowercase_ascii @@ String.sub name idx (String.length name - idx)
 
 
 let map_decl v this_name = function

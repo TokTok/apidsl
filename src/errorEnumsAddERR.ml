@@ -3,7 +3,7 @@ open ApiFold
 
 
 let fold_decl v symtab = function
-  | Decl_Error (lname, enumerators) ->
+  | Decl_Error (lname, _) ->
       SymbolTable.rename lname
         (fun name -> "ERR_" ^ name) symtab
 

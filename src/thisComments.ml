@@ -2,13 +2,13 @@ open ApiAst
 open ApiMap
 
 
-let map_comment v state = function
+let map_comment _ _ = function
   | Cmt_None -> Cmt_None
   | Cmt_Doc comments ->
       let comments =
         List.fold_left
           (fun comments -> function
-             | Cmtf_Var (ty :: Var_LName "this" :: members) as member ->
+             | Cmtf_Var (ty :: Var_LName "this" :: _) as member ->
                  member :: Cmtf_Doc "." :: Cmtf_Var [ty; Var_LName "this"] :: comments
              | cmtf -> cmtf :: comments
           ) [] comments

@@ -2,7 +2,7 @@ open ApiAst
 open ApiMap
 
 
-let map_err_list v state enumerators =
+let map_err_list _ _ enumerators =
   let comment =
     Cmt_Doc [
       Cmtf_Break;

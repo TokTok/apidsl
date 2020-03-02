@@ -42,13 +42,13 @@ let lookup symtab scopes path =
     SymbolTable.lookup_qualified symtab scopes path
 
 
-let map_uname symtab v scopes uname =
+let map_uname symtab _ scopes uname =
   try
     lookup symtab scopes [uname]
   with Not_found ->
     failwith @@ "unresolved symbol: " ^ uname
 
-let map_lname symtab v scopes lname =
+let map_lname symtab _ scopes lname =
   try
     lookup symtab scopes [lname]
   with Not_found ->
@@ -79,7 +79,7 @@ let map_comment_fragment symtab v scopes = function
       visit_comment_fragment v scopes comment_fragment
 
 
-let map_enumerator symtab v scopes = function
+let map_enumerator _ v scopes = function
   | Enum_Name _ as enumerator ->
       visit_enumerator v scopes enumerator
 
@@ -89,7 +89,7 @@ let map_enumerator symtab v scopes = function
       Enum_Namespace (uname', enumerators)
 
 
-let map_error_list symtab v scopes = function
+let map_error_list _ v scopes = function
   | Err_From lname ->
       let lname = "error " ^ lname in
       let lname' = v.map_lname v scopes lname in
@@ -99,7 +99,7 @@ let map_error_list symtab v scopes = function
       visit_error_list v scopes error_list
 
 
-let map_decl symtab v scopes = function
+let map_decl _ v scopes = function
   | Decl_Namespace (lname, decls) ->
       let lname' = v.map_lname v scopes lname in
       let decls = scoped scopes lname (flip (visit_list v.map_decl v) decls) in
@@ -178,11 +178,11 @@ let transform (symtab, decls) =
 
 module Inverse = struct
 
-  let map_uname v symtab uname =
+  let map_uname _ symtab uname =
     SymbolTable.name symtab uname
 
 
-  let map_lname v symtab lname =
+  let map_lname _ symtab lname =
     SymbolTable.name symtab lname
 
 

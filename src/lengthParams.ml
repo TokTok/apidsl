@@ -9,7 +9,7 @@ let add_length_parameters lname parameters =
     List.rev (
       List.fold_left
         (fun parameters -> function
-           | Param (ty, name) as param when TypeName.is_var_array ty ->
+           | Param (ty, _) as param when TypeName.is_var_array ty ->
                let length = TypeName.length_param ty in
                Param (TypeName.size_t, length) :: param :: parameters
 

@@ -3,7 +3,7 @@ open ApiFold
 
 
 let fold_enumerator v (symtab, enum) = function
-  | Enum_Name (comment, uname, value) ->
+  | Enum_Name (_, uname, _) ->
       SymbolTable.rename uname
         (fun name -> enum ^ "_" ^ name) symtab, enum
 

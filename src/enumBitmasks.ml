@@ -7,7 +7,7 @@ let add_bit_values enumerators =
     (fun i -> function
        | Enum_Namespace _ ->
            failwith "enum namespace in bitmask"
-       | Enum_Name (comment, uname, Some value) ->
+       | Enum_Name (_, _, Some _) ->
            failwith "bitmask enumerator already has a value"
        | Enum_Name (comment, uname, None) ->
            Enum_Name (comment, uname, Some (1 lsl i))

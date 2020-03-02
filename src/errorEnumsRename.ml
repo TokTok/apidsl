@@ -3,11 +3,11 @@ open ApiFold
 
 
 let fold_decl v symtab = function
-  | Decl_Error (lname, enumerators) ->
+  | Decl_Error (lname, _) ->
       SymbolTable.rename lname
         (fun name ->
            assert (String.sub name 0 6 = "error ");
-           String.uppercase (String.sub name 6 (String.length name - 6)))
+           String.uppercase_ascii (String.sub name 6 (String.length name - 6)))
         symtab
 
   | decl ->

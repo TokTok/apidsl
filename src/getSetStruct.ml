@@ -23,7 +23,7 @@ let rec make_accessors acc ns = function
 
 
 let fold_decl v repl = function
-  | Decl_Struct (lname, [], decls) as decl -> repl, decl
+  | Decl_Struct (_, [], _) as decl -> repl, decl
   | Decl_Struct (lname, ["get"; "set"], decls) ->
       let funcs = List.rev @@ make_accessors [] "" decls in
       let decl = Decl_Struct (lname, [], decls) in

@@ -10,20 +10,20 @@ let fold_decl v (symtab, ns) = function
       in
       (symtab, ns)
 
-  | Decl_Namespace (name, decls) ->
+  | Decl_Namespace (_, decls) ->
       let (symtab, _) =
         visit_list v.fold_decl v (symtab, ns) decls
       in
       (symtab, ns)
 
-  | Decl_Struct (this, _, decls) ->
+  | Decl_Struct (this, _, _) ->
       let ns_names = List.map (SymbolTable.name symtab) ns in
 
       let symtab =
         let class_name =
           ns_names
           |> List.rev
-          |> List.map String.capitalize
+          |> List.map String.capitalize_ascii
           |> String.concat "_"
         in
         SymbolTable.rename this
