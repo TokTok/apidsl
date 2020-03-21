@@ -1,3 +1,4 @@
+%{
 /* toxav.h
  * 
  * Copyright (C) 2013-2015 Tox project All Rights Reserved.
@@ -29,6 +30,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+%}
 
 /** \page av Public audio/video API for Tox clients.
  * 
@@ -769,6 +771,7 @@ class toxAV {
   
 }
 
-
+%{
 #endif
+%}
 

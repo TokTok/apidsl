@@ -1,0 +1,4 @@
+(executable
+  (name apigen)
+  (libraries apidsl tiny_httpd yojson ppx_deriving_yojson.runtime)
+  (preprocess (pps ppx_deriving_yojson)))

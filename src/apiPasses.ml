@@ -127,13 +127,29 @@ let haskell modname api =
   Format.flush_str_formatter ()
 
 
-let format_error (token, start_p, _) =
+let dump_api pre api post =
+  let pp_verbatim fmt =
+    Format.fprintf fmt "%%{@\n%a@\n%%}@\n" Format.pp_print_string
+  in
+  Option.may (pp_verbatim Format.str_formatter) pre;
+  Format.fprintf Format.str_formatter "%a\n"
+    ApiCodegen.Api.cg_decls api;
+  Option.may (pp_verbatim Format.str_formatter) post;
+
+  Format.flush_str_formatter ()
+
+
+let format_lex_error start_p token =
   let open Lexing in
   Printf.sprintf "%s:%d:%d: error at %s"
     start_p.pos_fname
     start_p.pos_lnum
     (start_p.pos_cnum - start_p.pos_bol + 1)
-    (ApiLexer.string_of_token token)
+    token
+
+
+let format_error (token, start_p, _) =
+  format_lex_error start_p (ApiLexer.string_of_token token)
 
 
 let lex state lexbuf =
@@ -171,6 +187,14 @@ let parse_lexbuf lexbuf =
   let state = ApiLexer.state () in
   parse state lexbuf None (ApiParser.Incremental.parse_api Lexing.dummy_pos)
 
+let parse_string file str =
+  let lexbuf = Lexing.from_string str in
+  lexbuf.Lexing.lex_curr_p <- Lexing.({
+      lexbuf.lex_curr_p with
+      pos_fname = file;
+    });
+
+  parse_lexbuf lexbuf
 
 let parse_file file =
   let fh = open_in file in

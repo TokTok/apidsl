@@ -6,14 +6,6 @@ type outlang =
   | C
   | Haskell of string
 
-let dump_api pre api post =
-  Option.may (Format.pp_print_string Format.str_formatter) pre;
-  Format.fprintf Format.str_formatter "%a\n"
-    ApiCodegen.Api.cg_decls api;
-  Option.may (Format.fprintf Format.str_formatter "\n%s\n") post;
-
-  Format.flush_str_formatter ()
-
 
 let main input =
   let api = ApiPasses.parse_file input in
@@ -22,7 +14,7 @@ let main input =
   | C               -> print_string (ApiPasses.all pre ast post)
   | Haskell modname -> print_string (ApiPasses.haskell modname ast)
   | Ast             -> print_endline (ApiAst.show_api Format.pp_print_string api)
-  | Api             -> print_endline (dump_api pre ast post)
+  | Api             -> print_endline (ApiPasses.dump_api pre ast post)
 
 
 let () =

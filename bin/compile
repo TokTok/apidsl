@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -eu
+
+BUILD_DIR="$1"
+CACHE_DIR="$2"
+ENV_DIR="$1"
+
+export PATH="/tmp/opam:$PATH"
+export OPAMROOT="$CACHE_DIR/opam"
+
+# Download opam.
+echo "/tmp/opam
+Y" | sh <(curl -sL https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh)
+
+# Enter source directory.
+cd "$BUILD_DIR"
+
+. "$BUILD_DIR/bin/install-deps"
+
+# Build our app.
+dune build --profile release

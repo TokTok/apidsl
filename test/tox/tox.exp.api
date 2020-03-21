@@ -1,3 +1,4 @@
+%{
 /* tox.h
  *
  * The Tox public API.
@@ -31,6 +32,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+%}
 
 
 /*******************************************************************************
@@ -3096,10 +3098,11 @@ class tox {
   
 }
 
-
+%{
 #ifdef __cplusplus
 }
 #endif
 
 #endif
+%}
 

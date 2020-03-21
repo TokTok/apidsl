@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -eux
+
+# Set up opam, install dune and menhir (it's not a library dependency).
+opam init --disable-sandboxing -n
+opam install dune menhir -y
+
+eval $(opam env)
+
+# Install dependencies: we keep installing dependencies until dune stops telling
+# us to install more.
+DUNE_CMD='dune external-lib-deps --missing --profile release @@default |& grep -o "opam install .*" || true'
+INSTALL_CMD="$(eval $DUNE_CMD)"
+while [ -n "$INSTALL_CMD" ]; do
+  $INSTALL_CMD -y
+  INSTALL_CMD="$(eval $DUNE_CMD)"
+done

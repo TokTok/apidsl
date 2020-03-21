@@ -29,7 +29,7 @@ let lookup symtab scopes path =
     | -1 ->
         (* If not, it must be a user-defined type with "this" struct. *)
         let ns = String.sub lname 0 (String.length lname - 2) in
-        let scopes = List.tl scopes in
+        let scopes = match scopes with [] -> [] | _ :: tl -> tl in
         begin
           try
             SymbolTable.lookup symtab [ns] "this"

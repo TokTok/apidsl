@@ -1,6 +1,7 @@
 ---
 language: generic
 os: linux
+dist: xenial
 
 addons:
   apt:
@@ -15,9 +16,8 @@ cache:
     - $HOME/.opam
 
 install:
-  - opam init -y
-  - eval `opam env`
-  - opam install -y menhir ppx_deriving bisect_ppx dune
+  - bin/install-deps
+  - eval $(opam env)
 
 script:
   - make coveralls
