@@ -24,7 +24,7 @@ let wrap req_of_yojson res_to_yojson f req =
     in
     respond 0 res_to_yojson (f decoded)
   with e ->
-    respond 0 text_to_yojson (Printexc.to_string e)
+    respond 1 text_to_yojson (Printexc.to_string e)
 
 let () =
   let port_ = ref 8080 in

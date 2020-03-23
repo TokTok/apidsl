@@ -13,10 +13,10 @@ export OPAMROOT="$CACHE_DIR/opam"
 echo "/tmp/opam
 Y" | sh <(curl -sL https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh)
 
-# Enter source directory.
+# Enter source directory, install opam and dependencies.
 cd "$BUILD_DIR"
-
-. "$BUILD_DIR/bin/install-deps"
+bin/install-deps --no-backup
+eval $(opam env)
 
 # Build our app.
 dune build --profile release

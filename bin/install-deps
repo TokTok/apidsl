@@ -1,9 +1,9 @@
 #!/bin/bash
 
-set -eux
+set -eu
 
 # Set up opam, install dune and menhir (it's not a library dependency).
-opam init --disable-sandboxing -n
+opam init --disable-sandboxing -n "$@"
 opam install dune menhir -y
 
 eval $(opam env)
