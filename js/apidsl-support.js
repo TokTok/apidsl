@@ -59,7 +59,7 @@ function process() {
    let error = document.getElementById("error");
    let input = document.getElementById("input").value;
    let output = document.getElementById("output");
-   let format = document.querySelector("input[name="format"]:checked").value;
+   let format = document.querySelector("input[name='format']:checked").value;
 
    try {
       processLocal(input, format, output, error);
