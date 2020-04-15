@@ -1,5 +1,4 @@
 apigen.native: $(wildcard *.ml* src/*.ml*)
-	dune clean
 	dune build --profile release
 	cp _build/default/apigen.exe $@
 
@@ -7,7 +6,6 @@ test/%/dune: test/dune-template Makefile
 	sed -e 's/%NAME%/$*/g' $< > $@
 
 check: $(patsubst %,%dune,$(dir $(wildcard test/*/*.api.h)))
-	dune clean
 	BISECT_ENABLE=yes dune runtest
 
 coverage: check

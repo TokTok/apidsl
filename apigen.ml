@@ -27,5 +27,8 @@ let () =
     | [|_; "-ast"        ; input|] -> main input Ast
     | [|_; "-api"        ; input|] -> main input Api
     | _ -> print_endline "Usage: apigen <file>"
-  with Failure (msg) ->
-    print_endline ("Failure: " ^ msg)
+  with
+  | Failure msg -> print_endline ("Failure: " ^ msg)
+  | ApiLexer.Lexing_error (start_p, token) ->
+      let error = ApiPasses.format_lex_error start_p token in
+      print_endline ("Lexing_error: " ^ error)
