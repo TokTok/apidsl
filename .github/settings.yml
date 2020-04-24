@@ -1,0 +1,21 @@
+---
+_extends: template
+
+repository:
+  name: apidsl
+  description: DSL for C APIs to aid consistency of naming schemes and comments.
+  topics: dsl, naming-schemes, consistency, ocaml
+  has_issues: true
+
+branches:
+  - name: "master"
+    protection:
+      required_status_checks:
+        contexts:
+          - Codacy/PR Quality Review
+          - Docker Build
+          - Travis CI - Pull Request
+          - WIP
+          - code-review/reviewable
+          - coverage/coveralls
+          - license/cla
