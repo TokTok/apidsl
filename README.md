@@ -16,15 +16,15 @@ will attempt to install these if they are not yet installed.
 
 #### Installing dependencies:
 
-Make sure to configure **OPAM** by running ``opam init``. (Depending on your
-configuration you might also need to run ``eval `opam config env` ``).  Running
-``opam install ocamlfind ppx_deriving menhir`` should install all dependencies
+Make sure to configure **OPAM** by running `opam init`. (Depending on your
+configuration you might also need to run ``eval `opam config env` ``). Running
+`opam install ocamlfind ppx_deriving menhir` should install all dependencies
 required for APIDSL.
 
 #### Compiling
 
-Just run ``make`` in APIDSL's root directory. The apidsl binary can be found
-under ``./_build/apigen.native``
+Just run `make` in APIDSL's root directory. The apidsl binary can be found under
+`./_build/apigen.native`
 
 ### Docker
 
@@ -37,7 +37,8 @@ or you don't want to pollute your system by installing all those dependencies.
 [Get Docker on your system](https://docs.docker.com/engine/installation/linux/).
 Note that some versions of
 [Debian](https://packages.debian.org/search?suite=all&searchon=names&keywords=docker.io)
-and [Ubuntu](http://packages.ubuntu.com/search?suite=all&searchon=names&keywords=docker.io)
+and
+[Ubuntu](http://packages.ubuntu.com/search?suite=all&searchon=names&keywords=docker.io)
 have it in their package repository.
 
 Run the following. It takes about 4 minutes to run on my machine, so you can
