@@ -8,16 +8,17 @@ license: "GPL3"
 homepage: "https://github.com/TokTok/apidsl"
 bug-reports: "https://github.com/TokTok/apidsl/issues"
 depends: [
-  "dune" {> "1.5"}
+  "dune" {>= "2.9" & >= "2.9.1"}
   "bisect_ppx" {> "0.1"}
   "js_of_ocaml-ppx" {> "0.1"}
   "menhirLib" {>= "20200211"}
   "ppx_deriving_yojson" {> "0.1"}
-  "tiny_httpd" {> "0.1"}
-  "yojson" {> "0.1"}
+  "tiny_httpd" {>= "0.9"}
+  "yojson" {>= "1.7.0"}
+  "odoc" {with-doc}
 ]
 build: [
-  ["dune" "subst"] {pinned}
+  ["dune" "subst"] {dev}
   [
     "dune"
     "build"
@@ -25,9 +26,11 @@ build: [
     name
     "-j"
     jobs
+    "--promote-install-files=false"
     "@install"
     "@runtest" {with-test}
     "@doc" {with-doc}
   ]
+  ["dune" "install" "-p" name "--create-install-files" name]
 ]
 dev-repo: "git+https://github.com/TokTok/apidsl.git"

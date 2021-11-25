@@ -9,7 +9,7 @@ check: $(patsubst %,%dune,$(dir $(wildcard test/*/*.api.h)))
 	BISECT_ENABLE=yes dune runtest
 
 coverage: check
-	bisect-ppx-report -html _coverage/ -I _build/default _build/default/test/*/bisect*.coverage
+	bisect-ppx-report --html _coverage/ -I _build/default _build/default/test/*/bisect*.coverage
 
 coveralls: check
 	bisect-ppx-report \

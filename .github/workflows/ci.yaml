@@ -16,7 +16,10 @@ jobs:
 
       - name: Install dependencies
         run: opam install . --deps-only --with-test
-      - name: Build
-        run: opam exec -- dune build
-      - name: Run tests
-        run: opam exec -- dune runtest
+      - name: Build and run tests
+        run: opam exec -- make check
+      - name: Upload test coverage report to Coveralls
+        run: opam exec -- bisect-ppx-report send-to Coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
