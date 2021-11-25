@@ -34,27 +34,27 @@ let () =
     ]) (fun _ -> raise (Arg.Bad "")) "echo [option]*";
   let server = S.create ~addr:"0.0.0.0" ~port:!port_ () in
 
-  S.add_path_handler server "/parse"
+  S.add_route_handler ~meth:`POST server S.Route.(exact "parse" @/ return)
     @@ wrap text_of_yojson (ApiAst.api_to_yojson text_to_yojson)
     (ApiPasses.parse_string "input.api.h");
 
-  S.add_path_handler server "/api"
+  S.add_route_handler ~meth:`POST server S.Route.(exact "api" @/ return)
     @@ wrap (ApiAst.api_of_yojson text_of_yojson) text_to_yojson
     (fun api ->
       let ApiAst.Api (pre, ast, post) = api in
       ApiPasses.dump_api pre ast post);
 
-  S.add_path_handler server "/ast"
+  S.add_route_handler ~meth:`POST server S.Route.(exact "ast" @/ return)
     @@ wrap (ApiAst.api_of_yojson text_of_yojson) text_to_yojson
     (ApiAst.show_api Format.pp_print_string);
 
-  S.add_path_handler server "/c"
+  S.add_route_handler ~meth:`POST server S.Route.(exact "c" @/ return)
     @@ wrap (ApiAst.api_of_yojson text_of_yojson) text_to_yojson
     (fun api ->
       let ApiAst.Api (pre, ast, post) = api in
       ApiPasses.all pre ast post);
 
-  S.add_path_handler server "/haskell"
+  S.add_route_handler ~meth:`POST server S.Route.(exact "haskell" @/ return)
     @@ wrap (ApiAst.api_of_yojson text_of_yojson) text_to_yojson
     (fun api ->
       let ApiAst.Api (_, ast, _) = api in
