@@ -12,8 +12,10 @@ branches:
     protection:
       required_status_checks:
         contexts:
-          - Codacy/PR Quality Review
+          - build
+          - Codacy Static Code Analysis
           - Docker Build
+          - Hound
           - WIP
           - code-review/reviewable
           - coverage/coveralls
