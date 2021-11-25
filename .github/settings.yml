@@ -14,7 +14,6 @@ branches:
         contexts:
           - Codacy/PR Quality Review
           - Docker Build
-          - Travis CI - Pull Request
           - WIP
           - code-review/reviewable
           - coverage/coveralls
