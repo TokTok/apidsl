@@ -10,7 +10,7 @@ let headers = [
   ("Content-Type", "application/json");
 ]
 
-let respond ok b_to_yojson res = 
+let respond ok b_to_yojson res =
   S.Response.make_string ~headers
     (Ok (Yojson.Safe.to_string (response_to_yojson b_to_yojson (ok, res))))
 
