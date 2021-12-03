@@ -5,7 +5,7 @@ RUN opam init --disable-sandboxing && opam update && opam install -y \
  dune \
  js_of_ocaml-ppx \
  ppx_deriving \
- ppx_deriving_yojson \ 
+ ppx_deriving_yojson \
  tiny_httpd
 CMD cp /apidsl /tmp/apidsl-dirty -R \
  && cd /tmp/apidsl-dirty \
